@@ -45,7 +45,11 @@ def part_five(df, year, vendor_search):
     # Récupérer le nom et l'ID du fournisseur
     supplier_name = supplier_data['Nom du fournisseur'].iloc[0]
     supplier_id = supplier_data['Fournisseur'].iloc[0].astype(int)
+
+
     
+   
+    '''
     # Filtrer par année
     mask_current = (supplier_data['Year'] == year)
     current_data = supplier_data[mask_current].copy()
@@ -59,8 +63,23 @@ def part_five(df, year, vendor_search):
     
     # Filtrer les données pour l'année précédente
     mask_prev = (supplier_data['Year'] == prev_year)
+    prev_data = supplier_data[mask_prev].copy()'''
+
+    # Filtrer par année ET mois sélectionnés (remplacer le filtrage existant)
+    mask_current = (supplier_data['Year'] == year) & (supplier_data['Month'].isin(st.session_state.selected_months))
+    current_data = supplier_data[mask_current].copy()
+
+    if current_data.empty:
+        st.warning(f"Aucune donnée disponible pour {supplier_name} en {year} pour les mois sélectionnés")
+        return
+
+    # Pour la période de comparaison, utiliser les mêmes mois mais de l'année précédente
+    prev_year = year - 1
+    mask_prev = (supplier_data['Year'] == prev_year) & (supplier_data['Month'].isin(st.session_state.selected_months))
     prev_data = supplier_data[mask_prev].copy()
-    
+        
+
+
     # Utiliser un style personnalisé pour l'en-tête
     st.markdown(f"""
     <div style="background-color:{color_palette['primary']}; padding: 10px; border-radius: 10px;">
@@ -397,7 +416,7 @@ def part_five(df, year, vendor_search):
                 # Appliquer le style au DataFrame
                 styled_order_evolution = order_evolution.style.apply(
                     highlight_columns_order, axis=None
-                ).applymap(
+                ).map(
                     highlight_evolution, subset=['Évolution (jours)']
                 ).format({
                     f'Actuel ({year})': '{:.1f}',
@@ -433,7 +452,7 @@ def part_five(df, year, vendor_search):
                 # Appliquer le style au DataFrame
                 styled_product_evolution = product_evolution.style.apply(
                     highlight_columns_order, axis=None
-                ).applymap(
+                ).map(
                     highlight_evolution, subset=['Évolution (jours)']
                 ).format({
                     f'Actuel ({year})': '{:.1f}',
