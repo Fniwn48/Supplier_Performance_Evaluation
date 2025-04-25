@@ -18,7 +18,7 @@ from part1_five import *
 from file1 import *
 
 
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide",page_title="Suivi de la Performance Fournisseur ⭐")
 
 def main():
     apply_custom_theme()
