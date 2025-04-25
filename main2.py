@@ -16,7 +16,7 @@ from part1_four import *
 from gamme import *
 from part1_five import *
 from file1 import *
-
+from part22 import *
 
 st.set_page_config(layout="wide",page_title="Suivi de la Performance Fournisseur ⭐")
 
@@ -394,6 +394,7 @@ def main():
                 if selected_prodline != "Toutes les gammes":
                     special_df1_part5 = special_df1_part5[special_df1_part5["Prodline Name"] == selected_prodline]
                 # Utilisez ce DataFrame spécial
+                setup_period_filter(year)
                 part_five(special_df1_part5, year, selected_vendor)
                 part1_five(filtered_df2, year, selected_vendor)
                 if selected_prodline == "Toutes les gammes":
