@@ -29,6 +29,7 @@ def part1_five(df, year, vendor_search):
         'background': '#F3F4F6',      # Gris très clair
         'text': '#1E293B'             # Bleu slate foncé
     }
+    
     # Titre et description de la section
     st.markdown(f"""
         <div style="background-color:{color_palette['quaternary']}; padding: 8px; border-radius: 8px; margin-top: 25px;">
@@ -43,6 +44,8 @@ def part1_five(df, year, vendor_search):
     (df_year["Nom du fournisseur"].str.contains(vendor_search, case=False)) | 
     (df_year["Fournisseur"].astype(str).str.contains(vendor_search, case=False))
 ]
+      # Utiliser les mois sélectionnés stockés dans session_state
+    df_year = df_year[df_year['Month'].isin(st.session_state.selected_months)]
 
     # Afficher les indicateurs clés (KPIs) pour le fournisseur sélectionné
     total_orders = df_year["Bons de commande"].nunique()
@@ -349,6 +352,8 @@ def camembert5(df,year,vendor_search):
     (df_year["Nom du fournisseur"].str.contains(vendor_search, case=False)) | 
     (df_year["Fournisseur"].astype(str).str.contains(vendor_search, case=False))
 ]
+     # Utiliser les mois sélectionnés stockés dans session_state
+    df_year = df_year[df_year['Month'].isin(st.session_state.selected_months)]
 
     # Regrouper les données par prodline
     prodline_summary = df_year.groupby("Prodline Name").agg(
