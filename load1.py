@@ -84,6 +84,11 @@ def load_and_validate_file1(uploaded_file):
             df = df[required_columns]
             # Check that all required columns exist
             if all(column in df.columns for column in required_columns):
+                #Remplacer les valeurs None par des chaînes vides pour les trois colonnes spécifiées
+                df["Vendor Material Number"] = df["Vendor Material Number"].fillna("")
+                df["Material Description"] = df["Material Description"].fillna("")
+                df["Name 1"] = df["Name 1"].fillna("")
+                
                 # Date conversion
                 df["Posting Date"] = pd.to_datetime(df["Posting Date"], errors='coerce')
                 
