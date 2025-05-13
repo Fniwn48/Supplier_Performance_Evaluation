@@ -175,7 +175,7 @@ def part_five(df, year, vendor_search):
         st.markdown(f"""
         <div style="background-color:{color_palette['background']}; padding:20px; border-radius:10px; text-align:center;">
             <h4 style="color:{color_palette['primary']}; margin:0;">{total_orders}</h4>
-            <p style="margin:5px 0 0 0;">Nombre total de commandes</p>
+            <p style="margin:5px 0 0 0;">Nombre de commandes</p>
         </div>
         """, unsafe_allow_html=True)
 
