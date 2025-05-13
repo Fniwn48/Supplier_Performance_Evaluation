@@ -97,11 +97,11 @@ def part_two(df, year, month):
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        display_metric_card("Nombre total de fournisseurs", total_fournisseurs, color="#3949AB")
+        display_metric_card("Nombre de fournisseurs", total_fournisseurs, color="#3949AB")
     with col2:
-        display_metric_card("Nombre total de matériels uniques", total_materiels, color="#1E88E5")
+        display_metric_card("Nombre de références", total_materiels, color="#1E88E5")
     with col3:
-        display_metric_card("Nombre total de commandes", total_commandes, color="#039BE5")
+        display_metric_card("Nombre de commandes", total_commandes, color="#039BE5")
     
     # KPI Délais produits
     st.markdown("<h6 style='color: #000000; margin-top: 20px;'>Délai des produits</h6>", unsafe_allow_html=True)
