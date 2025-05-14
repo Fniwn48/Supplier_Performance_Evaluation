@@ -114,9 +114,9 @@ def part_four(df, selected_supplier):
                 return f'background-color: {color_palette["quaternary"]}30;'
             elif col_name == 'Nombre de commandes':
                 return f'background-color: {color_palette["primary"]}30;'
-            elif col_name == 'Nombre de produits uniques':
+            elif col_name == 'Nombre de références':
                 return f'background-color: {color_palette["secondary"]}30;'
-            elif col_name == 'Nombre total de produits':
+            elif col_name == 'Nombre de lignes':
                 return f'background-color: {color_palette["tertiary"]}30;'
         return ''
     
@@ -124,8 +124,8 @@ def part_four(df, selected_supplier):
     styled_yearly_summary = yearly_summary.style\
         .map(lambda x: color_yearly_summary(x, 'Année'), subset=['Année'])\
         .map(lambda x: color_yearly_summary(x, 'Nombre de commandes'), subset=['Nombre de commandes'])\
-        .map(lambda x: color_yearly_summary(x, 'Nombre de produits uniques'), subset=['Nombre de produits uniques'])\
-        .map(lambda x: color_yearly_summary(x, 'Nombre total de produits'), subset=['Nombre total de produits'])
+        .map(lambda x: color_yearly_summary(x, 'Nombre de références'), subset=['Nombre de produits uniques'])\
+        .map(lambda x: color_yearly_summary(x, 'Nombre de lignes'), subset=['Nombre total de produits'])
     
     # Afficher le tableau sans l'index
     st.dataframe(styled_yearly_summary, use_container_width=True, hide_index=True)
