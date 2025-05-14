@@ -92,13 +92,13 @@ def part_four(df, selected_supplier):
         Nombre_total_de_produits=('Matériel', 'count')
     ).reset_index()
     
-    yearly_summary.columns = ['Année', 'Nombre de commandes', 'Nombre de produits uniques', 'Nombre total de produits']
+    yearly_summary.columns = ['Année', 'Nombre de commandes', 'Nombre de références', 'Nombre de lignes']
     
     # Convertir les années et les valeurs entières en format sans virgule
     yearly_summary['Année'] = yearly_summary['Année'].astype(int)
     yearly_summary['Nombre de commandes'] = yearly_summary['Nombre de commandes'].astype(int)
-    yearly_summary['Nombre de produits uniques'] = yearly_summary['Nombre de produits uniques'].astype(int)
-    yearly_summary['Nombre total de produits'] = yearly_summary['Nombre total de produits'].astype(int)
+    yearly_summary['Nombre de références'] = yearly_summary['Nombre de références'].astype(int)
+    yearly_summary['Nombre de lignes'] = yearly_summary['Nombre de lignes'].astype(int)
     
     # Créer un tableau stylisé
     st.markdown(f"""
