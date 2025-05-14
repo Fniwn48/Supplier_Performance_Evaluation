@@ -319,7 +319,7 @@ def part_five(df, year, vendor_search):
             change_color = color_palette['positive'] if order_change >= 0 else color_palette['negative']
             st.markdown(f"""
             <div style="padding:10px; border-radius:5px; text-align:center;">
-                <p style="margin:0;">Commandes: {prev_total_orders} → {total_orders}</p>
+                <p style="margin:0;">Nombre de commandes: {prev_total_orders} → {total_orders}</p>
                 <h5 style="color:{change_color}; margin:5px 0 0 0;">{order_change:+.1f}%</h5>
             </div>
             """, unsafe_allow_html=True)
@@ -328,7 +328,7 @@ def part_five(df, year, vendor_search):
             change_color = color_palette['positive'] if product_change >= 0 else color_palette['negative']
             st.markdown(f"""
             <div style="padding:10px; border-radius:5px; text-align:center;">
-                <p style="margin:0;">Produits uniques: {prev_total_products} → {total_products}</p>
+                <p style="margin:0;">Nombre de références: {prev_total_products} → {total_products}</p>
                 <h5 style="color:{change_color}; margin:5px 0 0 0;">{product_change:+.1f}%</h5>
             </div>
             """, unsafe_allow_html=True)
@@ -337,7 +337,7 @@ def part_five(df, year, vendor_search):
             change_color = color_palette['positive'] if product_count_change >= 0 else color_palette['negative']
             st.markdown(f"""
             <div style="padding:10px; border-radius:5px; text-align:center;">
-                <p style="margin:0;">Total produits commandés: {prev_total_products_count} → {total_products_count}</p>
+                <p style="margin:0;">Nombre de lignes: {prev_total_products_count} → {total_products_count}</p>
                 <h5 style="color:{change_color}; margin:5px 0 0 0;">{product_count_change:+.1f}%</h5>
             </div>
             """, unsafe_allow_html=True)
