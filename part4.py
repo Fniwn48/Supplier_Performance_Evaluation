@@ -124,8 +124,8 @@ def part_four(df, selected_supplier):
     styled_yearly_summary = yearly_summary.style\
         .map(lambda x: color_yearly_summary(x, 'Année'), subset=['Année'])\
         .map(lambda x: color_yearly_summary(x, 'Nombre de commandes'), subset=['Nombre de commandes'])\
-        .map(lambda x: color_yearly_summary(x, 'Nombre de références'), subset=['Nombre de produits uniques'])\
-        .map(lambda x: color_yearly_summary(x, 'Nombre de lignes'), subset=['Nombre total de produits'])
+        .map(lambda x: color_yearly_summary(x, 'Nombre de références'), subset=['Nombre de références'])\
+        .map(lambda x: color_yearly_summary(x, 'Nombre de lignes'), subset=['Nombre de lignes'])
     
     # Afficher le tableau sans l'index
     st.dataframe(styled_yearly_summary, use_container_width=True, hide_index=True)
