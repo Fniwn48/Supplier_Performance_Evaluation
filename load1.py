@@ -34,7 +34,7 @@ def add_vc_status(df, vc_file):
        
        # Ajouter la colonne Type VC
        df["Type VC"] = df["Matériel"].apply(
-           lambda x: "Install" if x == "Y5010646" else ("VC" if x in vc_materials else "Non VC")
+           lambda x: "Install" if x == "Y5010646" else ("VC" if x in vc_materials else "Standard")
        )
        
        return df
