@@ -2,6 +2,45 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 
+def add_vc_status(df, vc_file):
+   """
+   Ajoute la colonne 'Type VC' à un DataFrame en identifiant les matériaux VC.
+   
+   Args:
+       df: DataFrame auquel ajouter la colonne 'Type VC'
+       vc_file: Fichier Excel contenant la liste des matériaux VC
+       
+   Returns:
+       DataFrame avec la colonne 'Type VC' ajoutée
+   """
+   if vc_file is None:
+       return df
+   
+   try:
+       # Vérifier que le DataFrame contient la colonne Matériel
+       if "Matériel" not in df.columns:
+           return df
+       
+       # Charger le fichier VC
+       vc_df = pd.read_excel(vc_file)
+       
+       # Vérifier que le fichier VC contient la colonne Material
+       if "Material" not in vc_df.columns:
+           return df
+       
+       # Créer une liste des matériaux VC (unique)
+       vc_materials = vc_df["Material"].unique().tolist()
+       
+       # Ajouter la colonne Type VC
+       df["Type VC"] = df["Matériel"].apply(
+           lambda x: "VC" if x in vc_materials else "Non VC"
+       )
+       
+       return df
+       
+   except Exception as e:
+       return df
+
 
 def add_prodline_name(df, reference_file):
     """
