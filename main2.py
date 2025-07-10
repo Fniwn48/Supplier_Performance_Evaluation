@@ -20,6 +20,7 @@ from part22 import *
 
 st.set_page_config(layout="wide",page_title="Suivi de la Performance Fournisseur ⭐")
 
+
 def main():
     apply_custom_theme()
     
@@ -61,30 +62,48 @@ def main():
                 st.markdown("<p>Fichier des produits VC:</p>", unsafe_allow_html=True)
                 vc_file = st.file_uploader("Importez votre quatrième fichier Excel (produits VC)", type=["xlsx"], key="file4")
             
+            st.markdown("</div>", unsafe_allow_html=True)
         
-        # Charger les trois fichiers
-        df1 = load_and_validate_file1(uploaded_file1)
-        if df1 is not None:
-            df1 = add_prodline_name(df1, prodline_ref_file)
-            df1 = add_vc_status(df1, vc_file)
-        df2 = load_and_validate_file2(uploaded_file2, df1)
-        if df2 is not None:
-            df2 = add_prodline_name(df2, prodline_ref_file)
-            df2 = add_vc_status(df2, vc_file)
-        
-        # Vérifier/ajouter la colonne Drop Statut si nécessaire
-        if df1 is not None and "Drop Statut" not in df1.columns:
-            df1["Drop Statut"] = "Non défini"
-        if df2 is not None and "Drop Statut" not in df2.columns:
-            df2["Drop Statut"] = "Non défini"
-        
-        # Si les deux fichiers sont chargés avec succès, mettre à jour l'état de session
-        if df1 is not None and df2 is not None:
-            st.session_state.files_uploaded = True
-            st.session_state.df1 = df1
-            st.session_state.df2 = df2
-            # Rafraîchir la page pour masquer la section d'importation
-            st.rerun()
+        # Vérifier si TOUS les fichiers sont présents avant de commencer le traitement
+        if uploaded_file1 is not None and uploaded_file2 is not None and prodline_ref_file is not None and vc_file is not None:
+            # Charger les fichiers
+            df1 = load_and_validate_file1(uploaded_file1)
+            if df1 is not None:
+                df1 = add_prodline_name(df1, prodline_ref_file)
+                df1 = add_vc_status(df1, vc_file)
+            
+            df2 = load_and_validate_file2(uploaded_file2, df1)
+            if df2 is not None:
+                df2 = add_prodline_name(df2, prodline_ref_file)
+                df2 = add_vc_status(df2, vc_file)
+            
+            # Vérifier/ajouter la colonne Drop Statut si nécessaire
+            if df1 is not None and "Drop Statut" not in df1.columns:
+                df1["Drop Statut"] = "Non défini"
+            if df2 is not None and "Drop Statut" not in df2.columns:
+                df2["Drop Statut"] = "Non défini"
+            
+            # Si les deux fichiers sont chargés avec succès, mettre à jour l'état de session
+            if df1 is not None and df2 is not None:
+                st.session_state.files_uploaded = True
+                st.session_state.df1 = df1
+                st.session_state.df2 = df2
+                # Rafraîchir la page pour masquer la section d'importation
+                st.rerun()
+        else:
+            # Afficher un message indiquant quels fichiers manquent
+            missing_files = []
+            if uploaded_file1 is None:
+                missing_files.append("Fichier des délais de livraison")
+            if uploaded_file2 is None:
+                missing_files.append("Fichier des commandes")
+            if prodline_ref_file is None:
+                missing_files.append("Fichier des gammes de produits")
+            if vc_file is None:
+                missing_files.append("Fichier des produits VC")
+            
+            if missing_files:
+                st.info(f"En attente de : {', '.join(missing_files)}")
     else:
         # Récupérer les dataframes à partir de l'état de session
         df1 = st.session_state.df1
@@ -97,7 +116,7 @@ def main():
             st.session_state.pop('df2', None)
             st.rerun()
 
-    if df1 is not None and df2 is not None:
+    if df1 is not None and df2 is not None and st.session_state.files_uploaded:
         # Récupérer les années et mois uniques pour les filtres
         # Combiner les années des deux dataframes
         available_years1 = sorted(df1["Year"].unique())
@@ -194,6 +213,9 @@ def main():
         prodline_options = ["Toutes les gammes"] + all_prodline_list
         selected_prodline = st.sidebar.selectbox("Choisissez une gamme de produit", prodline_options)
         
+        # Initialiser selected_vc_types
+        selected_vc_types = []
+        
         # Appliquer les filtres sélectionnés
         if selected_vendor != "Tous les fournisseurs":
             # Filtrer par fournisseur
@@ -228,7 +250,7 @@ def main():
             st.sidebar.markdown(
                 """
                 <div style="background-color: #e3f2fd; padding: 10px; border-radius: 5px; border-left: 5px solid #1E88E5; margin: 10px 0;">
-                <p style="margin: 0; color: #0d47a1;">Veuillez d'abord sélectionner une année, un fournisseur ou une gamme pour filtrer par statut ou par Type VC</p>
+                <p style="margin: 0; color: #0d47a1;">Veuillez d'abord sélectionner une année, un fournisseur ou une gamme pour filtrer par statut</p>
                 </div>
                 """, 
                 unsafe_allow_html=True
@@ -242,38 +264,45 @@ def main():
         else:
             status_filtered_df1 = prodline_filtered_df1
             status_filtered_df2 = prodline_filtered_df2
-        
-        # Ajout du filtre Type VC - disponible uniquement si un autre filtre est sélectionné
+            
+        # Filtre Type VC - disponible uniquement si un autre filtre est sélectionné
         if selected_year != "Toutes les années" or selected_vendor != "Tous les fournisseurs" or selected_prodline != "Toutes les gammes" or selected_status != "Tous les statuts":
             st.sidebar.markdown("<h3 style='color: #1E88E5; margin-top: 20px;'>Type VC</h3>", unsafe_allow_html=True)
             
-            # Vérifier si la colonne Type VC existe
-            if "Type VC" in status_filtered_df1.columns and "Type VC" in status_filtered_df2.columns:
-                # Obtenir les valeurs uniques de Type VC
+            # Vérifier si la colonne Type VC existe et obtenir les valeurs uniques
+            if "Type VC" in df1.columns and "Type VC" in df2.columns:
                 vc_values_df1 = set(status_filtered_df1["Type VC"].dropna().unique())
                 vc_values_df2 = set(status_filtered_df2["Type VC"].dropna().unique())
                 vc_values = sorted(vc_values_df1.union(vc_values_df2))
                 
-                # Ajouter "Tous les types" au début de la liste
-                vc_options = ["Tous les types"] + list(vc_values)
-                selected_vc = st.sidebar.selectbox("Choisissez un type", vc_options)
-            else:
-                selected_vc = "Tous les types"
+                # Multiselect pour permettre la sélection multiple
+                selected_vc_types = st.sidebar.multiselect(
+                    "Sélectionnez le(s) type(s)", 
+                    vc_values,
+                    default=vc_values  # Par défaut, tous sont sélectionnés
+                )
         else:
-            
-            selected_vc = "Tous les types"
+            # Si aucun autre filtre n'est sélectionné, désactiver ce filtre
+            st.sidebar.markdown(
+                """
+                <div style="background-color: #e3f2fd; padding: 10px; border-radius: 5px; border-left: 5px solid #1E88E5; margin: 10px 0;">
+                <p style="margin: 0; color: #0d47a1;">Veuillez d'abord sélectionner un autre filtre pour filtrer par type VC</p>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
         
-        # Appliquer le filtre Type VC
-        if selected_vc != "Tous les types" and "Type VC" in status_filtered_df1.columns and "Type VC" in status_filtered_df2.columns:
-            filtered_df1 = status_filtered_df1[status_filtered_df1["Type VC"] == selected_vc]
-            filtered_df2 = status_filtered_df2[status_filtered_df2["Type VC"] == selected_vc]
+        # Appliquer le filtre Type VC avec multiselect
+        if selected_vc_types and "Type VC" in status_filtered_df1.columns and "Type VC" in status_filtered_df2.columns:
+            filtered_df1 = status_filtered_df1[status_filtered_df1["Type VC"].isin(selected_vc_types)]
+            filtered_df2 = status_filtered_df2[status_filtered_df2["Type VC"].isin(selected_vc_types)]
         else:
             filtered_df1 = status_filtered_df1
             filtered_df2 = status_filtered_df2
         
         # Gérer le cas où le filtre ne retourne aucune donnée
-        if (filtered_df1.empty or filtered_df2.empty) and selected_status != "Tous les statuts":
-            st.warning(f"Aucune donnée disponible pour le statut '{selected_status}' avec les filtres actuels.")
+        if filtered_df1.empty or filtered_df2.empty:
+            st.warning("Aucune donnée disponible avec les filtres actuels.")
         
         # Ajouter CSS pour colorer les tables
         st.markdown("""
@@ -367,8 +396,8 @@ def main():
             # Ajout du statut sélectionné au titre si applicable
             if selected_status != "Tous les statuts":
                 st.markdown(f"<h6 style='color: #1E88E5;'>Statut: {selected_status}</h6>", unsafe_allow_html=True)
-            if selected_vc != "Tous les types":
-                st.markdown(f"<h6 style='color: #1E88E5;'>Type: {selected_vc}</h6>", unsafe_allow_html=True)
+            if selected_vc_types and len(selected_vc_types) < len(vc_values):
+                st.markdown(f"<h6 style='color: #1E88E5;'>Type(s): {', '.join(selected_vc_types)}</h6>", unsafe_allow_html=True)
             # Appel à la fonction d'analyse de gamme
             analyser_gamme(gamme_df2, selected_prodline)
             
@@ -381,16 +410,16 @@ def main():
             # Ajout du statut sélectionné
             if selected_status != "Tous les statuts":
                 st.markdown(f"<h6 style='color: #1E88E5;'>Statut: {selected_status}</h6>", unsafe_allow_html=True)
-            if selected_vc != "Tous les types":
-                st.markdown(f"<h6 style='color: #1E88E5;'>Type: {selected_vc}</h6>", unsafe_allow_html=True)
+            if selected_vc_types and len(selected_vc_types) < len(vc_values):
+                st.markdown(f"<h6 style='color: #1E88E5;'>Type(s): {', '.join(selected_vc_types)}</h6>", unsafe_allow_html=True)
             # Création d'un DataFrame spécial pour part_three
             special_df1_part3 = df1.copy()
             if selected_status != "Tous les statuts":
                 special_df1_part3 = special_df1_part3[special_df1_part3["Drop Statut"] == selected_status]
             if selected_prodline != "Toutes les gammes":
                 special_df1_part3 = special_df1_part3[special_df1_part3["Prodline Name"] == selected_prodline]
-            if selected_vc != "Tous les types" and "Type VC" in special_df1_part3.columns:
-                special_df1_part3 = special_df1_part3[special_df1_part3["Type VC"] == selected_vc]
+            if selected_vc_types and "Type VC" in special_df1_part3.columns:
+                special_df1_part3 = special_df1_part3[special_df1_part3["Type VC"].isin(selected_vc_types)]
 
             part_three(special_df1_part3, year, month, selected_vendor)
             part1_three(filtered_df2, year, month, selected_vendor)
@@ -406,8 +435,8 @@ def main():
                 # Ajout du statut sélectionné
                 if selected_status != "Tous les statuts":
                     st.markdown(f"<h6 style='color: #1E88E5;'>Statut: {selected_status}</h6>", unsafe_allow_html=True)
-                if selected_vc != "Tous les types":
-                    st.markdown(f"<h6 style='color: #1E88E5;'>Type: {selected_vc}</h6>", unsafe_allow_html=True)
+                if selected_vc_types and len(selected_vc_types) < len(vc_values):
+                    st.markdown(f"<h6 style='color: #1E88E5;'>Type(s): {', '.join(selected_vc_types)}</h6>", unsafe_allow_html=True)
                 part_four(filtered_df1, selected_vendor)
                 part1_four(filtered_df2, selected_vendor)
                 if selected_prodline == "Toutes les gammes":
@@ -420,16 +449,16 @@ def main():
                 # Ajout du statut sélectionné
                 if selected_status != "Tous les statuts":
                     st.markdown(f"<h6 style='color: #1E88E5;'>Statut: {selected_status}</h6>", unsafe_allow_html=True)
-                if selected_vc != "Tous les types":
-                    st.markdown(f"<h6 style='color: #1E88E5;'>Type: {selected_vc}</h6>", unsafe_allow_html=True)
+                if selected_vc_types and len(selected_vc_types) < len(vc_values):
+                    st.markdown(f"<h6 style='color: #1E88E5;'>Type(s): {', '.join(selected_vc_types)}</h6>", unsafe_allow_html=True)
                 # Création d'un DataFrame spécial pour part_five
                 special_df1_part5 = df1.copy()
                 if selected_status != "Tous les statuts":
                     special_df1_part5 = special_df1_part5[special_df1_part5["Drop Statut"] == selected_status]
                 if selected_prodline != "Toutes les gammes":
                     special_df1_part5 = special_df1_part5[special_df1_part5["Prodline Name"] == selected_prodline]
-                if selected_vc != "Tous les types" and "Type VC" in special_df1_part5.columns:
-                    special_df1_part5 = special_df1_part5[special_df1_part5["Type VC"] == selected_vc]
+                if selected_vc_types and "Type VC" in special_df1_part5.columns:
+                    special_df1_part5 = special_df1_part5[special_df1_part5["Type VC"].isin(selected_vc_types)]
                 # Utilisez ce DataFrame spécial
                 setup_period_filter(year)
                 part_five(special_df1_part5, year, selected_vendor)
@@ -443,8 +472,8 @@ def main():
                 # Ajout du statut sélectionné
                 if selected_status != "Tous les statuts":
                     st.markdown(f"<h6 style='color: #1E88E5;'>Statut: {selected_status}</h6>", unsafe_allow_html=True)
-                if selected_vc != "Tous les types":
-                    st.markdown(f"<h6 style='color: #1E88E5;'>Type: {selected_vc}</h6>", unsafe_allow_html=True)
+                if selected_vc_types and len(selected_vc_types) < len(vc_values):
+                    st.markdown(f"<h6 style='color: #1E88E5;'>Type(s): {', '.join(selected_vc_types)}</h6>", unsafe_allow_html=True)
                 part_two(filtered_df1, year, month)
                 part1_two(filtered_df2, year, month)
                 if selected_prodline == "Toutes les gammes":
@@ -459,8 +488,8 @@ def main():
                 # Ajout du statut sélectionné
                 if selected_status != "Tous les statuts":
                     st.markdown(f"<h6 style='color: #1E88E5;'>Statut: {selected_status}</h6>", unsafe_allow_html=True)
-                if selected_vc != "Tous les types":
-                    st.markdown(f"<h6 style='color: #1E88E5;'>Type: {selected_vc}</h6>", unsafe_allow_html=True)
+                if selected_vc_types and len(selected_vc_types) < len(vc_values):
+                    st.markdown(f"<h6 style='color: #1E88E5;'>Type(s): {', '.join(selected_vc_types)}</h6>", unsafe_allow_html=True)
                 part_two(filtered_df1, year, month)
                 part1_two(filtered_df2, year, month)
                 if selected_prodline == "Toutes les gammes":
@@ -473,8 +502,8 @@ def main():
                 # Ajout du statut sélectionné
                 if selected_status != "Tous les statuts":
                     st.markdown(f"<h6 style='color: #1E88E5;'>Statut: {selected_status}</h6>", unsafe_allow_html=True)
-                if selected_vc != "Tous les types":
-                    st.markdown(f"<h6 style='color: #1E88E5;'>Type: {selected_vc}</h6>", unsafe_allow_html=True)
+                if selected_vc_types and len(selected_vc_types) < len(vc_values):
+                    st.markdown(f"<h6 style='color: #1E88E5;'>Type(s): {', '.join(selected_vc_types)}</h6>", unsafe_allow_html=True)
                 part_one(filtered_df1, year)
                 part1_one(filtered_df2, year)
                 if selected_prodline == "Toutes les gammes":
@@ -616,20 +645,12 @@ def main():
                       <li>Choisissez un <b>mois</b> pour analyser les performances mensuelles et valeurs de commande</li>
                       <li>Utilisez le <b>menu déroulant</b> pour sélectionner un fournisseur spécifique</li>
                       <li>Sélectionnez une <b>gamme de produit</b> pour analyser les performances par gamme</li>
-                      <li>Filtrez par <b>type VC</b> pour analyser séparément les produits VC et Non VC</li>
+                      <li>Filtrez par <b>type VC</b> pour analyser séparément les produits VC et Non VC (sélection multiple possible)</li>
                     </ul>
                     </div>
                     """, 
                     unsafe_allow_html=True
                 )
-    elif not st.session_state.files_uploaded:
-        # Message initial si aucun fichier n'est encore chargé
-        if df1 is not None and df2 is None:
-            st.warning("Veuillez importer le deuxième fichier pour une analyse complète.")
-        elif df1 is None and df2 is not None:
-            st.warning("Veuillez importer le premier fichier pour une analyse complète.")
-        elif df1 is None and df2 is None:
-            st.info("Veuillez importer les quatre fichiers Excel pour commencer l'analyse.")
 
 
 if __name__ == "__main__":
