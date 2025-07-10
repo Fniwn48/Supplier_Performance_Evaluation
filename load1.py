@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 
+@st.cache_data
 def add_vc_status(df, vc_file):
    """
    Ajoute la colonne 'Type VC' à un DataFrame en identifiant les matériaux VC.
@@ -33,7 +34,7 @@ def add_vc_status(df, vc_file):
        
        # Ajouter la colonne Type VC
        df["Type VC"] = df["Matériel"].apply(
-           lambda x: "VC" if x in vc_materials else "Non VC"
+           lambda x: "Install" if x == "Y5010646" else ("VC" if x in vc_materials else "Non VC")
        )
        
        return df
@@ -41,7 +42,7 @@ def add_vc_status(df, vc_file):
    except Exception as e:
        return df
 
-
+@st.cache_data
 def add_prodline_name(df, reference_file):
     """
     Ajoute la colonne 'Prodline Name' à un DataFrame en utilisant un fichier de référence.
@@ -112,7 +113,7 @@ def add_prodline_name(df, reference_file):
         st.error(f"Erreur lors de l'ajout de Prodline Name: {str(e)}")
         return df
 
-
+@st.cache_data
 def load_and_validate_file1(uploaded_file):
     if uploaded_file is not None:
         try:
@@ -191,7 +192,7 @@ def load_and_validate_file1(uploaded_file):
             return None
     return None
 
-
+@st.cache_data
 def load_and_validate_file2(uploaded_file, reference_df=None):
     if uploaded_file is None:
         return None
