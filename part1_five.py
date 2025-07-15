@@ -70,17 +70,21 @@ def part1_five(df, year, vendor_search):
     </div>
     """, unsafe_allow_html=True)
 
-    # Calculer les KPIs pour l'année précédente
+    # Calculer les KPIs pour l'année précédente,repartir du dataset original
+    previous_year_supplier_data = df[
+        (df["Nom du fournisseur"].str.contains(vendor_search, case=False, na=False)) | 
+        (df["Fournisseur"].astype(str).str.contains(vendor_search, case=False, na=False))
+    ].copy()
+    
     previous_year = year_int - 1
-    mask_prev = (supplier_data['Year'] == previous_year) & (supplier_data['Month'].isin(st.session_state.selected_months))
-    df_previous_year = supplier_data[mask_prev].copy()
+    mask_prev = (previous_year_supplier_data['Year'] == previous_year) & (previous_year_supplier_data['Month'].isin(st.session_state.selected_months))
+    df_previous_year = previous_year_supplier_data[mask_prev].copy()
     
     # KPIs année précédente
     previous_total_orders = df_previous_year["Bons de commande"].nunique()
     previous_total_materials = df_previous_year["Matériel"].nunique()
     previous_total_value = df_previous_year["Valeur nette de la commande"].sum()
     
-    print(f"KPIs année précédente - Commandes: {previous_total_orders}, Matériels: {previous_total_materials}, Valeur: {previous_total_value}")
 
     # Calculer les variations avec gestion de la division par zéro
     if previous_total_orders > 0:
