@@ -61,7 +61,78 @@ def part1_five(df, year, vendor_search):
         display_metric_card("Nombre de références", total_materials, color="#2ecc71")
     with col3:
         display_metric_card("Valeur totale", format_currency(total_value), color="#f39c12")
-   
+    # --- SECTION 2: COMPARAISON AVEC L'ANNÉE PRÉCÉDENTE ---
+    st.markdown(f"""
+        <div style="background-color:{color_palette['tertiary']}; padding: 8px; border-radius: 8px; margin-top: 25px;">
+            <h5 style="color: white;text-align: center; margin: 0;">Comparaison avec l'année précédente ({int(year)-1})</h5>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Calculer les KPIs pour l'année précédente
+    previous_year = int(year) - 1
+    df_previous_year = df[df['Year'] == previous_year]
+    df_previous_year = df_previous_year[
+        (df_previous_year["Nom du fournisseur"].str.contains(vendor_search, case=False)) | 
+        (df_previous_year["Fournisseur"].astype(str).str.contains(vendor_search, case=False))
+    ]
+    df_previous_year = df_previous_year[df_previous_year['Month'].isin(st.session_state.selected_months)]
+
+    # KPIs année précédente
+    previous_total_orders = df_previous_year["Bons de commande"].nunique()
+    previous_total_materials = df_previous_year["Matériel"].nunique()
+    previous_total_value = df_previous_year["Valeur nette de la commande"].sum()
+
+    # Calculer les variations avec gestion de la division par zéro
+    if previous_total_orders > 0:
+        orders_change = ((total_orders - previous_total_orders) / previous_total_orders * 100)
+        orders_change_text = f"{orders_change:+.1f}%"
+        orders_color = "green" if orders_change > 0 else "red" if orders_change < 0 else "gray"
+    else:
+        orders_change_text = "N/A"
+        orders_color = "gray"
+    
+    if previous_total_materials > 0:
+        materials_change = ((total_materials - previous_total_materials) / previous_total_materials * 100)
+        materials_change_text = f"{materials_change:+.1f}%"
+        materials_color = "green" if materials_change > 0 else "red" if materials_change < 0 else "gray"
+    else:
+        materials_change_text = "N/A"
+        materials_color = "gray"
+    
+    if previous_total_value > 0:
+        value_change = ((total_value - previous_total_value) / previous_total_value * 100)
+        value_change_text = f"{value_change:+.1f}%"
+        value_color = "green" if value_change > 0 else "red" if value_change < 0 else "gray"
+    else:
+        value_change_text = "N/A"
+        value_color = "gray"
+    
+    # Affichage de la comparaison
+    st.markdown('<div class="equal-height-cols">', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown(f"""
+            <div style="padding:10px; border-radius:5px; text-align:center;">
+                <p style="margin:0;">Nombre de commandes: {previous_total_orders} → {total_orders}</p>
+                <h5 style="color:{orders_color}; margin:5px 0 0 0;">{orders_change_text}</h5>
+            </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        st.markdown(f"""
+            <div style="padding:10px; border-radius:5px; text-align:center;">
+                <p style="margin:0;">Nombre de références: {previous_total_materials} → {total_materials}</p>
+                <h5 style="color:{materials_color}; margin:5px 0 0 0;">{materials_change_text}</h5>
+            </div>
+        """, unsafe_allow_html=True)
+    with col3:
+        st.markdown(f"""
+            <div style="padding:10px; border-radius:5px; text-align:center;">
+                <p style="margin:0;">Valeur totale: {format_currency(previous_total_value)} → {format_currency(total_value)}</p>
+                <h5 style="color:{value_color}; margin:5px 0 0 0;">{value_change_text}</h5>
+            </div>
+        """, unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+ 
     # Analyse détaillée des produits pour ce fournisseur
     st.markdown("<h6 style='color: #000000; margin-top: 20px;'>Détail des Matériels Commandés</h6>", unsafe_allow_html=True)
     
