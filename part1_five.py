@@ -77,13 +77,19 @@ def part1_five(df, year, vendor_search):
     ].copy()
     
     previous_year = year_int - 1
-    mask_prev = (previous_year_supplier_data['Year'] == previous_year) & (previous_year_supplier_data['Month'].isin(st.session_state.selected_months))
+    selected_months = st.session_state.selected_months if 'selected_months' in st.session_state else list(range(1, 13))
+    mask_prev = (previous_year_supplier_data['Year'] == previous_year) & (previous_year_supplier_data['Month'].isin(selected_months))
     df_previous_year = previous_year_supplier_data[mask_prev].copy()
     
     # KPIs année précédente
-    previous_total_orders = df_previous_year["Bons de commande"].nunique()
-    previous_total_materials = df_previous_year["Matériel"].nunique()
-    previous_total_value = df_previous_year["Valeur nette de la commande"].sum()
+    if len(df_previous_year) > 0:
+        previous_total_orders = df_previous_year["Bons de commande"].nunique()
+        previous_total_materials = df_previous_year["Matériel"].nunique()
+        previous_total_value = df_previous_year["Valeur nette de la commande"].sum()
+    else:
+        previous_total_orders = 0
+        previous_total_materials = 0
+        previous_total_value = 0
     
 
     # Calculer les variations avec gestion de la division par zéro
