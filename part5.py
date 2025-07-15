@@ -782,7 +782,7 @@ def part_five(df, year, vendor_search):
     # --- SECTION 6: ANALYSE AGREGÉE PAR PRODUIT ---
     st.markdown(f"""
     <div style="background-color:{color_palette['tertiary']}; padding: 8px; border-radius: 8px; margin-top: 25px;">
-        <h5 style="color: white;text-align: center;margin: 0;">Analyse Agrégée par Produit</h5>
+        <h5 style="color: white;text-align: center;margin: 0;">Analyse par Produit</h5>
     </div>
     """, unsafe_allow_html=True)
 
