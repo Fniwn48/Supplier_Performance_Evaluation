@@ -56,9 +56,9 @@ def part1_five(df, year, vendor_search):
     st.markdown('<div class="equal-height-cols">', unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
     with col1:
-        display_metric_card("Bons de commande", total_orders, color="#3498db")
+        display_metric_card("Nombre de commandes", total_orders, color="#3498db")
     with col2:
-        display_metric_card("Matériels uniques", total_materials, color="#2ecc71")
+        display_metric_card("Nombre de références", total_materials, color="#2ecc71")
     with col3:
         display_metric_card("Valeur totale", format_currency(total_value), color="#f39c12")
    
