@@ -61,10 +61,11 @@ def part1_five(df, year, vendor_search):
         display_metric_card("Nombre de références", total_materials, color="#2ecc71")
     with col3:
         display_metric_card("Valeur totale", format_currency(total_value), color="#f39c12")
+    st.markdown('</div>', unsafe_allow_html=True) 
     # --- SECTION 2: COMPARAISON AVEC L'ANNÉE PRÉCÉDENTE ---
     st.markdown(f"""
         <div style="background-color:{color_palette['tertiary']}; padding: 8px; border-radius: 8px; margin-top: 25px;">
-            <h5 style="color: white;text-align: center; margin: 0;">Comparaison avec l'année précédente ({int(year)-1})</h5>
+            <h5 style="color: white;text-align: center; margin: 0;">Comparaison avec l'année précédente {int(year)-1}</h5>
         </div>
         """, unsafe_allow_html=True)
     
