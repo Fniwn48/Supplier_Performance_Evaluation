@@ -41,8 +41,8 @@ def part1_five(df, year, vendor_search):
     df_year = df[df['Year'] == int(year)]
     # Filtrer les données pour le fournisseur sélectionné
     df_year = df_year[
-    (df_year["Nom du fournisseur"].str.contains(vendor_search, case=False)) | 
-    (df_year["Fournisseur"].astype(str).str.contains(vendor_search, case=False))
+        (df_year["Nom du fournisseur"].str.contains(vendor_search, case=False)) | 
+        (df_year["Fournisseur"].astype(str).str.contains(vendor_search, case=False))
 ]
       # Utiliser les mois sélectionnés stockés dans session_state
     df_year = df_year[df_year['Month'].isin(st.session_state.selected_months)]
