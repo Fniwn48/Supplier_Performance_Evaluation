@@ -459,10 +459,20 @@ def main():
                     special_df1_part5 = special_df1_part5[special_df1_part5["Prodline Name"] == selected_prodline]
                 if selected_vc_types and "Type VC" in special_df1_part5.columns:
                     special_df1_part5 = special_df1_part5[special_df1_part5["Type VC"].isin(selected_vc_types)]
+
+                # Création d'un DataFrame spécial pour part1_five (à partir de df2 complet)
+                special_df2_part1_five = df2.copy()
+                if selected_status != "Tous les statuts":
+                    special_df2_part1_five = special_df2_part1_five[special_df2_part1_five["Drop Statut"] == selected_status]
+                if selected_prodline != "Toutes les gammes":
+                    special_df2_part1_five = special_df2_part1_five[special_df2_part1_five["Prodline Name"] == selected_prodline]
+                if selected_vc_types and "Type VC" in special_df2_part1_five.columns:
+                    special_df2_part1_five = special_df2_part1_five[special_df2_part1_five["Type VC"].isin(selected_vc_types)]
+
                 # Utilisez ce DataFrame spécial
                 setup_period_filter(year)
                 part_five(special_df1_part5, year, selected_vendor)
-                part1_five(df2, year, selected_vendor)
+                part1_five(special_df2_part1_five, year, selected_vendor)
                 if selected_prodline == "Toutes les gammes":
                     camembert5(filtered_df2, year, selected_vendor)
             else:
