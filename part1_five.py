@@ -70,16 +70,10 @@ def part1_five(df, year, vendor_search):
     </div>
     """, unsafe_allow_html=True)
 
-    # Calculer les KPIs pour l'année précédente,repartir du dataset original
-    previous_year_supplier_data = df[
-        (df["Nom du fournisseur"].str.contains(vendor_search, case=False, na=False)) | 
-        (df["Fournisseur"].astype(str).str.contains(vendor_search, case=False, na=False))
-    ].copy()
-    
+    # Calculer les KPIs pour l'année précédente
     previous_year = year_int - 1
-    selected_months = st.session_state.selected_months if 'selected_months' in st.session_state else list(range(1, 13))
-    mask_prev = (previous_year_supplier_data['Year'] == previous_year) & (previous_year_supplier_data['Month'].isin(selected_months))
-    df_previous_year = previous_year_supplier_data[mask_prev].copy()
+    mask_prev = (supplier_data['Year'] == previous_year) & (supplier_data['Month'].isin(st.session_state.selected_months))
+    df_previous_year = supplier_data[mask_prev].copy()
     
     # KPIs année précédente
     if len(df_previous_year) > 0:
