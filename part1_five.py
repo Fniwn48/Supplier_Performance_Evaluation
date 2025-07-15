@@ -37,12 +37,9 @@ def part1_five(df, year, vendor_search):
         </div>
         """, unsafe_allow_html=True)
     
-    # Filtrer d'abord par fournisseur (sur tout le dataset)
-    supplier_data = df[
-        (df["Nom du fournisseur"].str.contains(vendor_search, case=False, na=False)) | 
-        (df["Fournisseur"].astype(str).str.contains(vendor_search, case=False, na=False))
-    ].copy()
-    
+    # Filtrer les données pour le fournisseur sélectionné
+    supplier_data = df[(df['Nom du fournisseur'] == vendor_search) | 
+                 (df['Fournisseur'] == vendor_search)].copy()
     # Filtrer par année ET mois en une seule opération
     year_int = int(year)
     mask_current = (supplier_data['Year'] == year_int) & (supplier_data['Month'].isin(st.session_state.selected_months))
