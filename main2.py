@@ -462,7 +462,7 @@ def main():
                 # Utilisez ce DataFrame spécial
                 setup_period_filter(year)
                 part_five(special_df1_part5, year, selected_vendor)
-                part1_five(filtered_df2, year, selected_vendor)
+                part1_five(df2, year, selected_vendor)
                 if selected_prodline == "Toutes les gammes":
                     camembert5(filtered_df2, year, selected_vendor)
             else:
