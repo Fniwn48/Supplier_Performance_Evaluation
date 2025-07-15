@@ -37,15 +37,16 @@ def part1_five(df, year, vendor_search):
         </div>
         """, unsafe_allow_html=True)
     
-    # Filtrer les données pour l'année sélectionnée
-    df_year = df[df['Year'] == int(year)]
-    # Filtrer les données pour le fournisseur sélectionné
-    df_year = df_year[
-        (df_year["Nom du fournisseur"].str.contains(vendor_search, case=False)) | 
-        (df_year["Fournisseur"].astype(str).str.contains(vendor_search, case=False))
-]
-      # Utiliser les mois sélectionnés stockés dans session_state
-    df_year = df_year[df_year['Month'].isin(st.session_state.selected_months)]
+    # Filtrer d'abord par fournisseur (sur tout le dataset)
+    supplier_data = df[
+        (df["Nom du fournisseur"].str.contains(vendor_search, case=False, na=False)) | 
+        (df["Fournisseur"].astype(str).str.contains(vendor_search, case=False, na=False))
+    ].copy()
+    
+    # Filtrer par année ET mois en une seule opération
+    year_int = int(year)
+    mask_current = (supplier_data['Year'] == year_int) & (supplier_data['Month'].isin(st.session_state.selected_months))
+    df_year = supplier_data[mask_current].copy()
 
     # Afficher les indicateurs clés (KPIs) pour le fournisseur sélectionné
     total_orders = df_year["Bons de commande"].nunique()
@@ -70,42 +71,9 @@ def part1_five(df, year, vendor_search):
     """, unsafe_allow_html=True)
 
     # Calculer les KPIs pour l'année précédente
-    previous_year = int(year) - 1
-    df_previous_year = df[df['Year'] == previous_year]
-    
-    # DÉBOGAGE : Vérifier combien de lignes nous avons avant filtrage
-    print(f"Données pour {previous_year} avant filtrage fournisseur : {len(df_previous_year)} lignes")
-    
-    df_previous_year = df_previous_year[
-        (df_previous_year["Nom du fournisseur"].str.contains(vendor_search, case=False)) | 
-        (df_previous_year["Fournisseur"].astype(str).str.contains(vendor_search, case=False))
-    ]
-    
-    # DÉBOGAGE : Vérifier combien de lignes nous avons après filtrage fournisseur
-    print(f"Données pour {previous_year} après filtrage fournisseur : {len(df_previous_year)} lignes")
-    
-    # PROBLÈME POTENTIEL : Cette ligne peut vider le DataFrame
-    # Vérifiez d'abord si les mois sélectionnés existent dans l'année précédente
-    available_months_previous = df_previous_year['Month'].unique()
-    print(f"Mois disponibles pour {previous_year} : {available_months_previous}")
-    print(f"Mois sélectionnés : {st.session_state.selected_months}")
-    
-    # Filtrer seulement par les mois qui existent dans l'année précédente
-    months_to_use = [month for month in st.session_state.selected_months if month in available_months_previous]
-    print(f"Mois à utiliser pour la comparaison : {months_to_use}")
-    
-    if months_to_use:
-        df_previous_year = df_previous_year[df_previous_year['Month'].isin(months_to_use)]
-    else:
-        # Si aucun mois ne correspond, utilisez tous les mois disponibles ou affichez un message
-        print("Aucun mois sélectionné n'est disponible pour l'année précédente")
-        st.warning(f"Aucun mois sélectionné n'est disponible pour {previous_year}")
-    
-    # DÉBOGAGE : Vérifier le DataFrame final
-    print(f"Données finales pour {previous_year} : {len(df_previous_year)} lignes")
-    if len(df_previous_year) > 0:
-        print(f"Exemple de données :")
-        print(df_previous_year[['Year', 'Month', 'Nom du fournisseur', 'Valeur nette de la commande']].head())
+    previous_year = year_int - 1
+    mask_prev = (supplier_data['Year'] == previous_year) & (supplier_data['Month'].isin(st.session_state.selected_months))
+    df_previous_year = supplier_data[mask_prev].copy()
     
     # KPIs année précédente
     previous_total_orders = df_previous_year["Bons de commande"].nunique()
