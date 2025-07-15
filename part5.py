@@ -788,10 +788,12 @@ def part_five(df, year, vendor_search):
 
     # Grouper les données par Matériel pour calculer les moyennes et pourcentages
     product_agg = current_data.groupby(['Matériel', 'Description du matériel', 'Matériel du fournisseur']).agg({
+        'Bon de commande': 'nunique',
         'Délai théorique': 'mean',
         'Délai réel': 'mean',
-        'Écart de délai': 'mean',
+        'Écart de délai': 'mean'
     }).reset_index()
+    product_agg = product_agg.rename(columns={'Bon de commande': 'Nbre de commandes'})  
 
     # Arrondir les valeurs à un chiffre après la virgule
     product_agg['Délai théorique'] = product_agg['Délai théorique'].round(1)
@@ -849,7 +851,9 @@ def part_five(df, year, vendor_search):
                 if col == 'Description du matériel' else
                 f'background-color: {color_palette["quaternary"]}30; color: {color_palette["text"]}' 
                 if col == 'Matériel du fournisseur' else
-                f'background-color: {color_palette["neutral"]}30; color: {color_palette["text"]}' 
+                f'background-color: {color_palette["neutral"]}30; color: {color_palette["text"]}'
+                if col == 'Nombre de commandes' else  # CETTE LIGNE VIENT MAINTENANT ICI
+                f'background-color: {color_palette["neutral"]}30; color: {color_palette["text"]}'
                 if col == 'Délai théorique' else
                 f'background-color: {color_palette["tertiary"]}30; color: {color_palette["text"]}' 
                 if col == 'Délai réel' else
@@ -908,7 +912,9 @@ def part_five(df, year, vendor_search):
                 if col == 'Description du matériel' else
                 f'background-color: {color_palette["quaternary"]}30; color: {color_palette["text"]}' 
                 if col == 'Matériel du fournisseur' else
-                f'background-color: {color_palette["neutral"]}30; color: {color_palette["text"]}' 
+                f'background-color: {color_palette["neutral"]}30; color: {color_palette["text"]}'
+                if col == 'Nombre de commandes' else  # CETTE LIGNE VIENT MAINTENANT ICI
+                f'background-color: {color_palette["neutral"]}30; color: {color_palette["text"]}'
                 if col == 'Délai théorique' else
                 f'background-color: {color_palette["tertiary"]}30; color: {color_palette["text"]}' 
                 if col == 'Délai réel' else
