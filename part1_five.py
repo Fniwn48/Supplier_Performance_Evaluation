@@ -75,6 +75,15 @@ def part1_five(df, year, vendor_search):
     mask_prev = (supplier_data['Year'] == previous_year) & (supplier_data['Month'].isin(st.session_state.selected_months))
     df_previous_year = supplier_data[mask_prev].copy()
     
+    # === DEBUG - AJOUTEZ CES LIGNES ===
+    st.write(f"**DEBUG - Année recherchée:** {previous_year}")
+    st.write(f"**DEBUG - Mois sélectionnés:** {st.session_state.selected_months}")
+    st.write(f"**DEBUG - Années disponibles dans supplier_data:** {sorted(supplier_data['Year'].unique())}")
+    st.write(f"**DEBUG - Mois disponibles pour {previous_year}:** {sorted(supplier_data[supplier_data['Year'] == previous_year]['Month'].unique()) if len(supplier_data[supplier_data['Year'] == previous_year]) > 0 else 'Aucun'}")
+    st.write(f"**DEBUG - Nombre de lignes supplier_data:** {len(supplier_data)}")
+    st.write(f"**DEBUG - Nombre de lignes après filtrage année précédente:** {len(df_previous_year)}")
+    # === FIN DEBUG ===
+    
     # KPIs année précédente
     if len(df_previous_year) > 0:
         previous_total_orders = df_previous_year["Bons de commande"].nunique()
