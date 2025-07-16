@@ -533,7 +533,11 @@ def main():
                     camembert1(filtered_df2, year)
 
             else:
-                 
+                <div style="background-color: #fff3cd; padding: 10px; border-radius: 5px; border-left: 5px solid #ffc107; margin: 10px 0;">
+                     <p style="margin: 0; color: #856404;">
+                         <strong>ℹ️ Information :</strong> Le matériel Y4950100 est exclu de l'analyse des délais de livraison mais reste inclus dans l'analyse des commandes
+                    </p>
+                </di v>
                 st.markdown("<h4 style='color: #1E88E5;'>Fichier 1: Délais de livraison</h4>", unsafe_allow_html=True)
                 st.markdown(
                     f"""
@@ -553,8 +557,6 @@ def main():
                 ).reset_index()
                 
                 st.markdown("<h5 style='color: #1E88E5; margin-top: 20px;'>Résumé</h5>", unsafe_allow_html=True)
-                st.markdown("<h6 style='color: #000000; margin-top: 20px;'>Le matériel Y4950100 est exclu de ce fichier</h6>", unsafe_allow_html=True)
-
                 
                 # Assurer que les métriques ont la même taille avec div.equal-height-cols
                 st.markdown('<div class="equal-height-cols">', unsafe_allow_html=True)
