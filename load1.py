@@ -8,21 +8,49 @@ def merge_df(df1, df2):
     if df1 is None or df2 is None or df1.empty or df2.empty:
         return df1
     
-    # Renommer df2
-    df2_renamed = df2.rename(columns={
-        "Bons de commande": "Bon de commande",
-        "Date du document": "Document Date"
-    })
+    # Préparer les données
+    result = df1.copy()
+    result["Document Date"] = None
+    result["Order Quantity"] = None
     
-    # Merge simple
-    merged = pd.merge(df1.reset_index(), df2_renamed, on=["Bon de commande", "Fournisseur", "Matériel"], how="left")
+    # Convertir en numpy pour vitesse maximale
+    df1_keys = (df1["Bon de commande"].values.astype(str) + "|" + 
+                df1["Fournisseur"].values.astype(str) + "|" + 
+                df1["Matériel"].values.astype(str))
     
-    # Ajouter un compteur pour distribuer les quantités
-    merged['rank'] = merged.groupby(['index', "Bon de commande", "Fournisseur", "Matériel"]).cumcount()
-    merged['df1_rank'] = merged.groupby(["Bon de commande", "Fournisseur", "Matériel"])['index'].transform(lambda x: x.rank(method='dense') - 1)
+    df2_keys = (df2["Bons de commande"].values.astype(str) + "|" + 
+                df2["Fournisseur"].values.astype(str) + "|" + 
+                df2["Matériel"].values.astype(str))
     
-    # Garder seulement les lignes où rank == df1_rank
-    result = merged[merged['rank'] == merged['df1_rank']].drop(['rank', 'df1_rank'], axis=1).set_index('index')
+    # Créer mapping ultra-rapide
+    from collections import defaultdict
+    key_mapping = defaultdict(list)
+    for i, key in enumerate(df2_keys):
+        key_mapping[key].append(i)
+    
+    # Compteur par clé
+    key_counters = defaultdict(int)
+    
+    # Vectoriser l'assignation
+    doc_dates = result["Document Date"].values
+    quantities = result["Order Quantity"].values
+    df2_doc_dates = df2["Date du document"].values
+    df2_quantities = df2["Order Quantity"].values
+    
+    # Boucle optimisée
+    for i, key in enumerate(df1_keys):
+        if key in key_mapping:
+            available_indices = key_mapping[key]
+            counter = key_counters[key]
+            if counter < len(available_indices):
+                df2_idx = available_indices[counter]
+                doc_dates[i] = df2_doc_dates[df2_idx]
+                quantities[i] = df2_quantities[df2_idx]
+                key_counters[key] += 1
+    
+    # Réassigner les valeurs
+    result["Document Date"] = doc_dates
+    result["Order Quantity"] = quantities
     
     return result
     
