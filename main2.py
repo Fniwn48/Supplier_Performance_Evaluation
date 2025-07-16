@@ -563,7 +563,7 @@ def main():
                 with col1:
                     display_metric_card("Fournisseurs", df1["Fournisseur"].nunique(), color="#4527A0")
                 with col2:
-                    display_metric_card("Bons de commande", df1["Bon de commande"].nunique(), color="#00897B")
+                    display_metric_card("Nombre de commandes", df1["Bon de commande"].nunique(), color="#00897B")
                 with col3:
                     display_metric_card("Nombre de références", df1["Matériel"].nunique(), color="#C62828")
                 with col4:
