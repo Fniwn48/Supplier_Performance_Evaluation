@@ -607,7 +607,7 @@ def main():
                 # Résumé pour le fichier 2
                 years_summary2 = df2.groupby("Year").agg(
                     nb_vendors=("Fournisseur", "nunique"),
-                    nb_orders=("Nbre de commandes", "nunique"),
+                    nb_orders=("Bons de commande", "nunique"),
                     nb_materials=("Matériel", "nunique"),
                     nb_lignes=("Matériel", "count"),
                     total_value=("Valeur nette de la commande", "sum")
