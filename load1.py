@@ -15,10 +15,6 @@ def merge_df(df1, df2):
     # Sauvegarder le nombre de lignes initial
     initial_rows = len(df1)
     
-    # Ajouter un index temporaire à df1 pour pouvoir revenir aux lignes originales
-    df1_with_index = df1.reset_index(drop=True)
-    df1_with_index['temp_index'] = df1_with_index.index
-    
     # Préparer df2 pour la fusion
     df2_prep = df2[["Bons de commande", "Fournisseur", "Matériel", "Date du document", "Order Quantity"]].rename(columns={
         "Bons de commande": "Bon de commande",
@@ -26,23 +22,33 @@ def merge_df(df1, df2):
     }).reset_index(drop=True)
     
     # Fusion (peut créer des doublons)
-    result = pd.merge(df1_with_index, df2_prep, on=["Bon de commande", "Fournisseur", "Matériel"], how="left")
+    result = pd.merge(df1.reset_index(drop=True), df2_prep, on=["Bon de commande", "Fournisseur", "Matériel"], how="left")
     
-    # Supprimer les doublons en gardant la première occurrence pour chaque ligne originale de df1
-    # On groupe par temp_index et on prend la première occurrence
-    result_deduplicated = result.groupby('temp_index').first().reset_index()
+    # Afficher combien de lignes ont été créées
+    st.write(f"🔍 Lignes avant fusion : {initial_rows}")
+    st.write(f"🔍 Lignes après fusion : {len(result)}")
     
-    # Supprimer la colonne temporaire
-    result_deduplicated = result_deduplicated.drop('temp_index', axis=1)
+    # Supprimer les doublons basés sur TOUTES les colonnes originales de df1
+    # Identifier les colonnes de df1 (sans les nouvelles colonnes ajoutées)
+    df1_columns = df1.columns.tolist()
     
-    # Vérification que le nombre de lignes correspond à df1
+    # Supprimer les doublons en gardant la première occurrence
+    result_deduplicated = result.drop_duplicates(subset=df1_columns, keep='first')
+    
+    st.write(f"🔍 Lignes après suppression des doublons : {len(result_deduplicated)}")
+    
+    # Vérification finale
     if len(result_deduplicated) != initial_rows:
-        st.error(f"❌ Erreur : Nombre de lignes après déduplication : {initial_rows} → {len(result_deduplicated)}")
-        return df1
+        st.warning(f"⚠️ Attention : {initial_rows} lignes attendues, {len(result_deduplicated)} lignes obtenues")
+        
+        # Afficher quelques exemples de doublons pour debug
+        if len(result) > initial_rows:
+            st.write("📋 Exemples de doublons détectés :")
+            duplicates = result[result.duplicated(subset=df1_columns, keep=False)]
+            st.dataframe(duplicates.head(10))
     
     return result_deduplicated
-
-
+    
 @st.cache_data
 def add_vc_status(df, vc_file):
    """
