@@ -6,19 +6,42 @@ import matplotlib.pyplot as plt
 @st.cache_data
 def merge_df(df1, df2):
     """
-    Ajoute les colonnes 'Document Date' et 'Order Quantity' de df2 à df1.
+    Ajoute les colonnes 'Order Quantity' de df2 à df1 sans créer de lignes supplémentaires.
+    Supprime les doublons après fusion pour garder exactement les mêmes lignes que df1.
     """
     if df1 is None or df2 is None or df1.empty or df2.empty:
         return df1
     
-    # Sélectionner uniquement les colonnes nécessaires de df2
-    df2_merge = df2[["Bons de commande", "Fournisseur", "Matériel", "Date du document", "Order Quantity"]].rename(columns={
+    # Sauvegarder le nombre de lignes initial
+    initial_rows = len(df1)
+    
+    # Ajouter un index temporaire à df1 pour pouvoir revenir aux lignes originales
+    df1_with_index = df1.reset_index(drop=True)
+    df1_with_index['temp_index'] = df1_with_index.index
+    
+    # Préparer df2 pour la fusion
+    df2_prep = df2[["Bons de commande", "Fournisseur", "Matériel", "Date du document", "Order Quantity"]].rename(columns={
         "Bons de commande": "Bon de commande",
         "Date du document": "Document Date"
-    })
+    }).reset_index(drop=True)
     
-    # Fusion
-    return pd.merge(df1, df2_merge, on=["Bon de commande", "Fournisseur", "Matériel"], how="left")
+    # Fusion (peut créer des doublons)
+    result = pd.merge(df1_with_index, df2_prep, on=["Bon de commande", "Fournisseur", "Matériel"], how="left")
+    
+    # Supprimer les doublons en gardant la première occurrence pour chaque ligne originale de df1
+    # On groupe par temp_index et on prend la première occurrence
+    result_deduplicated = result.groupby('temp_index').first().reset_index()
+    
+    # Supprimer la colonne temporaire
+    result_deduplicated = result_deduplicated.drop('temp_index', axis=1)
+    
+    # Vérification que le nombre de lignes correspond à df1
+    if len(result_deduplicated) != initial_rows:
+        st.error(f"❌ Erreur : Nombre de lignes après déduplication : {initial_rows} → {len(result_deduplicated)}")
+        return df1
+    
+    return result_deduplicated
+
 
 @st.cache_data
 def add_vc_status(df, vc_file):
