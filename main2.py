@@ -470,7 +470,8 @@ def main():
                     special_df2_part1_five = special_df2_part1_five[special_df2_part1_five["Type VC"].isin(selected_vc_types)]
 
                 # Fusionner les DataFrames AVANT d'appeler part_five
-                special_df1_part5 = merge_df(special_df1_part5, special_df2_part5)
+                special_df1_part5 = merge_df(special_df1_part5, special_df2_part1_five)
+
 
                 # Utilisez ce DataFrame spécial
                 setup_period_filter(year)
