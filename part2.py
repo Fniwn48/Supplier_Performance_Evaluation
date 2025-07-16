@@ -24,7 +24,7 @@ def part_two(df, year, month):
         'background': '#F3F4F6',      # Gris très clair
      }
     
-    current_month_name = format_date(datetime(2022, month, 1), 'MMMM', locale='fr').upper()
+    current_month_name = format_date(datetime(2022, month, 1), 'MMMM', locale='fr')
     st.markdown(f"""
         <div style="background-color:{color_palette['primary']}; padding: 10px; border-radius: 10px;">
             <h4 style="color: white; text-align: center;">Résultats pour le mois {current_month_name} {year} </h4>
