@@ -2,6 +2,24 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 
+
+@st.cache_data
+def merge_df(df1, df2):
+    """
+    Ajoute les colonnes 'Document Date' et 'Order Quantity' de df2 à df1.
+    """
+    if df1 is None or df2 is None or df1.empty or df2.empty:
+        return df1
+    
+    # Sélectionner uniquement les colonnes nécessaires de df2
+    df2_merge = df2[["Bons de commande", "Fournisseur", "Matériel", "Date du document", "Order Quantity"]].rename(columns={
+        "Bons de commande": "Bon de commande",
+        "Date du document": "Document Date"
+    })
+    
+    # Fusion
+    return pd.merge(df1, df2_merge, on=["Bon de commande", "Fournisseur", "Matériel"], how="left")
+
 @st.cache_data
 def add_vc_status(df, vc_file):
    """
