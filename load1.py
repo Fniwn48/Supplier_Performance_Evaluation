@@ -6,48 +6,21 @@ import matplotlib.pyplot as plt
 @st.cache_data
 def merge_df(df1, df2):
     """
-    Ajoute les colonnes 'Order Quantity' de df2 à df1 sans créer de lignes supplémentaires.
-    Supprime les doublons après fusion pour garder exactement les mêmes lignes que df1.
+    Ajoute les colonnes 'Document Date' et 'Order Quantity' de df2 à df1.
     """
     if df1 is None or df2 is None or df1.empty or df2.empty:
         return df1
     
-    # Sauvegarder le nombre de lignes initial
-    initial_rows = len(df1)
-    
-    # Préparer df2 pour la fusion
-    df2_prep = df2[["Bons de commande", "Fournisseur", "Matériel", "Date du document", "Order Quantity"]].rename(columns={
+    # Sélectionner uniquement les colonnes nécessaires de df2
+    df2_merge = df2[["Bons de commande", "Fournisseur", "Matériel", "Date du document", "Order Quantity"]].rename(columns={
         "Bons de commande": "Bon de commande",
         "Date du document": "Document Date"
-    }).reset_index(drop=True)
+    })
     
-    # Fusion (peut créer des doublons)
-    result = pd.merge(df1.reset_index(drop=True), df2_prep, on=["Bon de commande", "Fournisseur", "Matériel"], how="left")
-    
-    # Afficher combien de lignes ont été créées
-    st.write(f"🔍 Lignes avant fusion : {initial_rows}")
-    st.write(f"🔍 Lignes après fusion : {len(result)}")
-    
-    # Supprimer les doublons basés sur TOUTES les colonnes originales de df1
-    # Identifier les colonnes de df1 (sans les nouvelles colonnes ajoutées)
-    df1_columns = df1.columns.tolist()
-    
-    # Supprimer les doublons en gardant la première occurrence
-    result_deduplicated = result.drop_duplicates(subset=df1_columns, keep='first')
-    
-    st.write(f"🔍 Lignes après suppression des doublons : {len(result_deduplicated)}")
-    
-    # Vérification finale
-    if len(result_deduplicated) != initial_rows:
-        st.warning(f"⚠️ Attention : {initial_rows} lignes attendues, {len(result_deduplicated)} lignes obtenues")
-        
-        # Afficher quelques exemples de doublons pour debug
-        if len(result) > initial_rows:
-            st.write("📋 Exemples de doublons détectés :")
-            duplicates = result[result.duplicated(subset=df1_columns, keep=False)]
-            st.dataframe(duplicates.head(10))
-    
-    return result_deduplicated
+    # Fusion
+    return pd.merge(df1, df2_merge, on=["Bon de commande", "Fournisseur", "Matériel"], how="left")
+
+
     
 @st.cache_data
 def add_vc_status(df, vc_file):
