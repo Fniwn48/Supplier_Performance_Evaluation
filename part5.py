@@ -654,6 +654,12 @@ def part_five(df, year, vendor_search):
     </div>
     """, unsafe_allow_html=True)
 
+     #  Renommer les deux colonnes
+    current_data = current_data.rename(columns={
+        'Document Date': 'Doc Date',
+        'Order Quantity': 'Order Qty'
+    })
+    
     # Séparation des produits en bons et mauvais
     good_products = current_data[current_data['Écart de délai'] <= 0].sort_values('Écart de délai').copy()
     bad_products = current_data[current_data['Écart de délai'] > 0].sort_values('Écart de délai', ascending=False).copy()
@@ -667,12 +673,7 @@ def part_five(df, year, vendor_search):
         # S'assurer que les numéros de commande sont des entiers sans décimales
         if 'Bon de commande' in df.columns and df['Bon de commande'].dtype != 'object':
             df['Bon de commande'] = df['Bon de commande'].astype(int)
-    
-    # 1. Renommer les colonnes dans current_data
-    current_data = current_data.rename(columns={
-        'Document Date': 'Doc Date',
-        'Order Quantity': 'Order Qty'
-    })
+            
     # Colonnes à afficher pour les produits
     product_display_cols = [
         'Matériel', 'Description du matériel', 'Bon de commande', 'Doc Date', 'Order Qty',
