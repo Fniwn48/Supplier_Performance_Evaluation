@@ -5,6 +5,10 @@ from plotly.subplots import make_subplots
 import streamlit as st
 from datetime import datetime
 from file1 import *
+from babel.dates import format_date
+import locale
+locale.setlocale(locale.LC_ALL, 'C')
+from datetime import datetime
 
 
 def part_two(df, year, month):
@@ -19,8 +23,8 @@ def part_two(df, year, month):
         'negative': '#EF4444',        # Rouge erreur
         'background': '#F3F4F6',      # Gris très clair
      }
-    current_month_name = datetime(2022, month, 1).strftime('%B')
-
+    
+    current_month_name = format_date(datetime(2022, month, 1), 'MMMM', locale='fr').upper()
     st.markdown(f"""
         <div style="background-color:{color_palette['primary']}; padding: 10px; border-radius: 10px;">
             <h4 style="color: white; text-align: center;">Résultats pour le mois {current_month_name} {year} </h4>
