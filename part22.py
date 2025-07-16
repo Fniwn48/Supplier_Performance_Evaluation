@@ -25,9 +25,6 @@ def setup_period_filter(year):
     # Stocker les valeurs dans session_state
     st.session_state.start_month, st.session_state.end_month = month_range
     
-    # Afficher les mois sélectionnés DANS LA SIDEBAR
-    st.sidebar.caption(f"Période sélectionnée : {month_names[st.session_state.start_month-1]} à {month_names[st.session_state.end_month-1]}")
-    
     # Créer la liste des mois sélectionnés et la stocker
     st.session_state.selected_months = list(range(st.session_state.start_month, st.session_state.end_month + 1))
     
