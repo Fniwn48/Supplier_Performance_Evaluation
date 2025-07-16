@@ -667,10 +667,15 @@ def part_five(df, year, vendor_search):
         # S'assurer que les numéros de commande sont des entiers sans décimales
         if 'Bon de commande' in df.columns and df['Bon de commande'].dtype != 'object':
             df['Bon de commande'] = df['Bon de commande'].astype(int)
-
+    
+    # 1. Renommer les colonnes dans current_data
+    current_data = current_data.rename(columns={
+        'Document Date': 'Doc Date',
+        'Order Quantity': 'Order Qty'
+    })
     # Colonnes à afficher pour les produits
     product_display_cols = [
-        'Matériel', 'Description du matériel', 'Bon de commande', 'Document Date', 'Order Quantity',
+        'Matériel', 'Description du matériel', 'Bon de commande', 'Doc Date', 'Order Qty',
         'Délai théorique', 'Délai réel', 'Écart de délai', 'Statut de livraison'
     ]
 
@@ -694,6 +699,15 @@ def part_five(df, year, vendor_search):
         # S'assurer que les numéros de commande sont des entiers sans décimales
         if 'Bon de commande' in display_good_products.columns and display_good_products['Bon de commande'].dtype != 'object':
             display_good_products['Bon de commande'] = display_good_products['Bon de commande'].astype(int)
+        # Formater Doc Date (afficher seulement la date)
+
+        if 'Doc Date' in display_good_products.columns:
+            display_good_products['Doc Date'] = pd.to_datetime(display_good_products['Doc Date'], errors='coerce').dt.strftime('%Y-%m-%d')
+        
+        # Formater Order Qty (2 chiffres après la virgule)
+        if 'Order Qty' in display_good_products.columns:
+            display_good_products['Order Qty'] = display_good_products['Order Qty'].apply(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
+
         
         # Styliser le dataframe en combinant les couleurs par colonne et le gradient pour Écart
         if not display_good_products.empty:
@@ -705,9 +719,9 @@ def part_five(df, year, vendor_search):
                 f'background-color: {color_palette["quaternary"]}30; color: {color_palette["text"]}' 
                 if col == 'Bon de commande' else
                 f'background-color: {color_palette["neutral"]}30; color: {color_palette["text"]}' 
-                if col == 'Document Date' else
+                if col == 'Doc Date' else
                 f'background-color: {color_palette["quaternary"]}30; color: {color_palette["text"]}'
-                if col == 'Order Quantity' else
+                if col == 'Order Qty' else
                 f'background-color: {color_palette["background"]}; color: {color_palette["text"]}'
                 if col == 'Délai théorique' else
                 f'background-color: {color_palette["tertiary"]}30; color: {color_palette["text"]}' 
@@ -749,6 +763,13 @@ def part_five(df, year, vendor_search):
         # S'assurer que les numéros de commande sont des entiers sans décimales
         if 'Bon de commande' in display_bad_products.columns and display_bad_products['Bon de commande'].dtype != 'object':
             display_bad_products['Bon de commande'] = display_bad_products['Bon de commande'].astype(int)
+        # Formater Doc Date 
+        if 'Doc Date' in display_bad_products.columns:
+            display_bad_products['Doc Date'] = pd.to_datetime(display_bad_products['Doc Date'], errors='coerce').dt.strftime('%Y-%m-%d')
+        
+        # Formater Order Qty (2 chiffres après la virgule)
+        if 'Order Qty' in display_bad_products.columns:
+            display_bad_products['Order Qty'] = display_bad_products['Order Qty'].apply(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
         
         # Styliser le dataframe en combinant les couleurs par colonne et le gradient pour Écart
         if not display_bad_products.empty:
@@ -760,9 +781,9 @@ def part_five(df, year, vendor_search):
                 f'background-color: {color_palette["quaternary"]}30; color: {color_palette["text"]}' 
                 if col == 'Bon de commande' else
                 f'background-color: {color_palette["neutral"]}30; color: {color_palette["text"]}' 
-                if col == 'Document Date' else
+                if col == 'Doc Date' else
                 f'background-color: {color_palette["quaternary"]}30; color: {color_palette["text"]}'
-                if col == 'Order Quantity' else
+                if col == 'Order Qty' else
                 f'background-color: {color_palette["background"]}; color: {color_palette["text"]}'
                 if col == 'Délai théorique' else
                 f'background-color: {color_palette["tertiary"]}30; color: {color_palette["text"]}' 
