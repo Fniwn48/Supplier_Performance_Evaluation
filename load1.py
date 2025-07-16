@@ -6,20 +6,30 @@ import matplotlib.pyplot as plt
 @st.cache_data
 def merge_df(df1, df2):
     """
-    Ajoute les colonnes 'Document Date' et 'Order Quantity' de df2 à df1.
+    Distribue les quantités de df2 aux lignes de df1 une par une, dans l'ordre.
+    Garde exactement le même nombre de lignes que df1.
     """
     if df1 is None or df2 is None or df1.empty or df2.empty:
         return df1
     
-    # Sélectionner uniquement les colonnes nécessaires de df2
-    df2_merge = df2[["Bons de commande", "Fournisseur", "Matériel", "Date du document", "Order Quantity"]].rename(columns={
-        "Bons de commande": "Bon de commande",
-        "Date du document": "Document Date"
-    })
+    result = df1.copy()
+    result["Document Date"] = None
+    result["Order Quantity"] = None
     
-    # Fusion
-    return pd.merge(df1, df2_merge, on=["Bon de commande", "Fournisseur", "Matériel"], how="left")
-
+    # Grouper par combinaison et distribuer les quantités
+    for key, group1 in df1.groupby(["Bon de commande", "Fournisseur", "Matériel"]):
+        # Trouver les lignes correspondantes dans df2
+        mask = (df2["Bons de commande"] == key[0]) & (df2["Fournisseur"] == key[1]) & (df2["Matériel"] == key[2])
+        group2 = df2[mask].reset_index(drop=True)
+        
+        # Distribuer les quantités aux lignes de df1
+        df1_indices = group1.index
+        for i, idx in enumerate(df1_indices):
+            if i < len(group2):
+                result.loc[idx, "Document Date"] = group2.iloc[i]["Date du document"]
+                result.loc[idx, "Order Quantity"] = group2.iloc[i]["Order Quantity"]
+    
+    return result
 
     
 @st.cache_data
