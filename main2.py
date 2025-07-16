@@ -536,7 +536,7 @@ def main():
                 st.markdown("""
                 <div style="background-color: #fff3cd; padding: 10px; border-radius: 5px; border-left: 5px solid #ffc107; margin: 10px 0;">
                     <p style="margin: 0; color: #856404;">
-                        <strong>ℹ️ Information :</strong> Le matériel Y4950100 est exclu de l'analyse des délais de livraison mais reste inclus dans l'analyse des commandes
+                        <strong>ℹ️ Information :</strong> Le matériel <span style="color: black; font-weight: bold;">Y4950100</span> est exclu de l'analyse des délais de livraison mais reste inclus dans l'analyse des commandes
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
