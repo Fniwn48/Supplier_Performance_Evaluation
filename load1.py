@@ -5,46 +5,26 @@ import matplotlib.pyplot as plt
 
 @st.cache_data
 def merge_df(df1, df2):
-    """
-    Version ultra-rapide avec numpy et vectorisation
-    """
     if df1 is None or df2 is None or df1.empty or df2.empty:
         return df1
     
-    # Copier df1
-    result = df1.copy()
+    # Renommer df2
+    df2_renamed = df2.rename(columns={
+        "Bons de commande": "Bon de commande",
+        "Date du document": "Document Date"
+    })
     
-    # Créer les colonnes avec des valeurs par défaut
-    result["Document Date"] = None
-    result["Order Quantity"] = None
+    # Merge simple
+    merged = pd.merge(df1.reset_index(), df2_renamed, on=["Bon de commande", "Fournisseur", "Matériel"], how="left")
     
-    # Créer des clés de combinaison pour df1 et df2
-    df1_keys = df1["Bon de commande"].astype(str) + "|" + df1["Fournisseur"].astype(str) + "|" + df1["Matériel"].astype(str)
-    df2_keys = df2["Bons de commande"].astype(str) + "|" + df2["Fournisseur"].astype(str) + "|" + df2["Matériel"].astype(str)
+    # Ajouter un compteur pour distribuer les quantités
+    merged['rank'] = merged.groupby(['index', "Bon de commande", "Fournisseur", "Matériel"]).cumcount()
+    merged['df1_rank'] = merged.groupby(["Bon de commande", "Fournisseur", "Matériel"])['index'].transform(lambda x: x.rank(method='dense') - 1)
     
-    # Dictionnaire simple pour mapper les quantités
-    mapping = {}
-    for i, key in enumerate(df2_keys):
-        if key not in mapping:
-            mapping[key] = []
-        mapping[key].append(i)
-    
-    # Compteur pour chaque clé
-    counters = {}
-    
-    # Assigner les valeurs
-    for i, key in enumerate(df1_keys):
-        if key not in counters:
-            counters[key] = 0
-        
-        if key in mapping and counters[key] < len(mapping[key]):
-            df2_idx = mapping[key][counters[key]]
-            result.iloc[i, result.columns.get_loc("Document Date")] = df2.iloc[df2_idx]["Date du document"]
-            result.iloc[i, result.columns.get_loc("Order Quantity")] = df2.iloc[df2_idx]["Order Quantity"]
-            counters[key] += 1
+    # Garder seulement les lignes où rank == df1_rank
+    result = merged[merged['rank'] == merged['df1_rank']].drop(['rank', 'df1_rank'], axis=1).set_index('index')
     
     return result
-    
     
 @st.cache_data
 def add_vc_status(df, vc_file):
