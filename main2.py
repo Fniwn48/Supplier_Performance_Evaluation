@@ -565,7 +565,7 @@ def main():
                 with col2:
                     display_metric_card("Bons de commande", df1["Bon de commande"].nunique(), color="#00897B")
                 with col3:
-                    display_metric_card("Matériels uniques", df1["Matériel"].nunique(), color="#C62828")
+                    display_metric_card("Nombre de références", df1["Matériel"].nunique(), color="#C62828")
                 with col4:
                     display_metric_card("Lignes de commande", df1.shape[0], color="#F9A825")
                 st.markdown('</div>', unsafe_allow_html=True)
@@ -577,7 +577,7 @@ def main():
                     "Year": "Année", 
                     "nb_vendors": "Fournisseurs", 
                     "nb_orders": "Bons de commande",
-                    "nb_materials": "Matériels uniques",
+                    "nb_materials": "Nbre de références",
                     "nb_lignes": "Lignes de commande"
                 })
                 
@@ -607,7 +607,7 @@ def main():
                 # Résumé pour le fichier 2
                 years_summary2 = df2.groupby("Year").agg(
                     nb_vendors=("Fournisseur", "nunique"),
-                    nb_orders=("Bons de commande", "nunique"),
+                    nb_orders=("Nbre de commandes", "nunique"),
                     nb_materials=("Matériel", "nunique"),
                     nb_lignes=("Matériel", "count"),
                     total_value=("Valeur nette de la commande", "sum")
@@ -622,9 +622,9 @@ def main():
                 with col1:
                     display_metric_card("Fournisseurs", df2["Fournisseur"].nunique(), color="#4527A0")
                 with col2:
-                    display_metric_card("Bons de commande", df2["Bons de commande"].nunique(), color="#00897B")
+                    display_metric_card("Nombre de commandes", df2["Bons de commande"].nunique(), color="#00897B")
                 with col3:
-                    display_metric_card("Matériels uniques", df2["Matériel"].nunique(), color="#C62828")
+                    display_metric_card("Nombre de références", df2["Matériel"].nunique(), color="#C62828")
                 with col4:
                     display_metric_card("Lignes de commande", df2.shape[0], color="#F9A825")
                 with col5:
@@ -637,8 +637,8 @@ def main():
                 years_summary2 = years_summary2.rename(columns={
                     "Year": "Année", 
                     "nb_vendors": "Fournisseurs", 
-                    "nb_orders": "Bons de commande",
-                    "nb_materials": "Matériels uniques",
+                    "nb_orders": "Nbre de commandes",
+                    "nb_materials": "Nbre de références",
                     "nb_lignes": "Lignes de commande",
                     "total_value": "Valeur totale"
                 })
