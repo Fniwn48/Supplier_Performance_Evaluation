@@ -533,11 +533,9 @@ def main():
                     camembert1(filtered_df2, year)
 
             else:
-                <div style="background-color: #fff3cd; padding: 10px; border-radius: 5px; border-left: 5px solid #ffc107; margin: 10px 0;">
-                     <p style="margin: 0; color: #856404;">
-                         <strong>ℹ️ Information :</strong> Le matériel Y4950100 est exclu de l'analyse des délais de livraison mais reste inclus dans l'analyse des commandes
-                    </p>
-                </div>
+                <h6 style='color: #666666; margin-top: 10px; font-style: italic;'>
+                    Note : Le matériel Y4950100 est exclu de l'analyse des délais de livraison mais reste présent dans l'analyse des commandes
+                </h6>
                 st.markdown("<h4 style='color: #1E88E5;'>Fichier 1: Délais de livraison</h4>", unsafe_allow_html=True)
                 st.markdown(
                     f"""
