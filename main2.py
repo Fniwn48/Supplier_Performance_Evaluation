@@ -199,7 +199,7 @@ def main():
         vendor_options = ["Tous les fournisseurs"] + vendor_list
         selected_vendor = st.sidebar.selectbox("Choisissez un fournisseur", vendor_options)
         # Filtre de période - affiché seulement si une année ET un fournisseur sont sélectionnés
-        if selected_year != "Toutes les années" and selected_vendor != "Tous les fournisseurs":
+        if selected_year != "Toutes les années" and selected_vendor != "Tous les fournisseurs" and month == "Tous":
             st.sidebar.markdown("<h3 style='color: #1E88E5; margin-top: 20px;'>Période</h3>", unsafe_allow_html=True)
             setup_period_filter(int(selected_year))
         else:
