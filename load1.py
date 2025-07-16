@@ -13,7 +13,8 @@ def merge_df(df1, df2):
     
     # Sélectionner uniquement les colonnes nécessaires de df2
     df2_merge = df2[["Bons de commande", "Fournisseur", "Matériel", "Date du document", "Order Quantity"]].rename(columns={
-        "Bons de commande": "Bon de commande"
+        "Bons de commande": "Bon de commande",
+        "Date du document": "Document Date"
     })
     
     # Fusion
@@ -136,7 +137,7 @@ def load_and_validate_file1(uploaded_file):
         try:
             df = pd.read_excel(uploaded_file)
             required_columns = ["Purchase order", "Vendor", "Name 1", "Material", 
-                                "Material Description","Document Date", "Vendor Material Number", "Posting Date", 
+                                "Material Description", "Vendor Material Number", "Posting Date", 
                                 "Actual Lead Time", "Planned Deliv. Time"]
             df = df[required_columns]
             # Check that all required columns exist
