@@ -2,7 +2,9 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-import locale; locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8' if 'win' not in __import__('sys').platform else 'French_France.1252')
+from babel.dates import format_date
+import locale
+locale.setlocale(locale.LC_ALL, 'C')
 from datetime import datetime
 
 def part_three(df, year, month, vendor_search):
@@ -67,8 +69,8 @@ def part_three(df, year, month, vendor_search):
     prev_data = supplier_data[mask_prev].copy()
     
     # Obtenir les noms des mois
-    current_month_name = datetime(2022, month, 1).strftime('%B')
-    prev_month_name = datetime(2022, month, 1).strftime('%B')
+    current_month_name = format_date(datetime(2022, month, 1), 'MMMM', locale='fr')
+    prev_month_name = format_date(datetime(2022, month, 1), 'MMMM', locale='fr')
     
     # Utiliser un style personnalisé pour l'en-tête
     st.markdown(f"""
