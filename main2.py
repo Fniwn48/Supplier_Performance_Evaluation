@@ -206,8 +206,8 @@ def main():
             # Valeurs par défaut si aucune année n'est sélectionnée
             st.session_state.start_month = 1
             st.session_state.end_month = 12
-            st.session_state.selected_months = list(range(1, 13))        
-
+            st.session_state.selected_months = list(range(1, 13))
+        
         # Filtre de gamme de produit - Maintenant permis sans sélection préalable
         st.sidebar.markdown("<h3 style='color: #1E88E5; margin-top: 20px;'>Gamme de produit</h3>", unsafe_allow_html=True)
         
