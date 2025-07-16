@@ -182,16 +182,6 @@ def main():
             month_filtered_df1 = year_filtered_df1
             month_filtered_df2 = year_filtered_df2
             month = "Tous"
-
-        # Filtre de période - affiché seulement si une année spécifique est sélectionnée
-        if selected_year != "Toutes les années" and selected_vendor != "Tous les fournisseurs":
-            st.sidebar.markdown("<h3 style='color: #1E88E5; margin-top: 20px;'>Période</h3>", unsafe_allow_html=True)
-            setup_period_filter(int(selected_year))
-        else:
-            # Valeurs par défaut si aucune année n'est sélectionnée
-            st.session_state.start_month = 1
-            st.session_state.end_month = 12
-            st.session_state.selected_months = list(range(1, 13))
         
         # Liste déroulante des fournisseurs
         st.sidebar.markdown("<h3 style='color: #1E88E5; margin-top: 20px;'>Sélection fournisseur</h3>", unsafe_allow_html=True)
@@ -208,7 +198,16 @@ def main():
         # Ajouter "Tous les fournisseurs" au début de la liste
         vendor_options = ["Tous les fournisseurs"] + vendor_list
         selected_vendor = st.sidebar.selectbox("Choisissez un fournisseur", vendor_options)
-        
+        # Filtre de période - affiché seulement si une année ET un fournisseur sont sélectionnés
+        if selected_year != "Toutes les années" and selected_vendor != "Tous les fournisseurs":
+            st.sidebar.markdown("<h3 style='color: #1E88E5; margin-top: 20px;'>Période</h3>", unsafe_allow_html=True)
+            setup_period_filter(int(selected_year))
+        else:
+            # Valeurs par défaut si aucune année n'est sélectionnée
+            st.session_state.start_month = 1
+            st.session_state.end_month = 12
+            st.session_state.selected_months = list(range(1, 13))        
+
         # Filtre de gamme de produit - Maintenant permis sans sélection préalable
         st.sidebar.markdown("<h3 style='color: #1E88E5; margin-top: 20px;'>Gamme de produit</h3>", unsafe_allow_html=True)
         
