@@ -567,7 +567,7 @@ def main():
                 with col3:
                     display_metric_card("Nombre de références", df1["Matériel"].nunique(), color="#C62828")
                 with col4:
-                    display_metric_card("Lignes de commande", df1.shape[0], color="#F9A825")
+                    display_metric_card("Lignes de commandes", df1.shape[0], color="#F9A825")
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Style du tableau récapitulatif
@@ -576,16 +576,16 @@ def main():
                 years_summary1 = years_summary1.rename(columns={
                     "Year": "Année", 
                     "nb_vendors": "Fournisseurs", 
-                    "nb_orders": "Bons de commande",
+                    "nb_orders": "Nbre de commandes",
                     "nb_materials": "Nbre de références",
-                    "nb_lignes": "Lignes de commande"
+                    "nb_lignes": "Lignes de commandes"
                 })
                 
                 # Formater les nombres - sans virgule pour les années
                 years_summary1["Année"] = years_summary1["Année"].apply(lambda x: format_number(x, is_year=True))
                 
                 # Formater les autres colonnes avec séparateurs de milliers
-                for col in ["Fournisseurs", "Bons de commande", "Matériels uniques", "Lignes de commande"]:
+                for col in ["Fournisseurs", "Nbre de commandes", "Nbre de références", "Lignes de commande"]:
                     years_summary1[col] = years_summary1[col].apply(lambda x: format_number(x))
                 
                 # Afficher le DataFrame sans l'index
@@ -626,7 +626,7 @@ def main():
                 with col3:
                     display_metric_card("Nombre de références", df2["Matériel"].nunique(), color="#C62828")
                 with col4:
-                    display_metric_card("Lignes de commande", df2.shape[0], color="#F9A825")
+                    display_metric_card("Lignes de commandes", df2.shape[0], color="#F9A825")
                 with col5:
                     display_metric_card("Valeur totale", format_currency(df2["Valeur nette de la commande"].sum()), color="#6A1B9A")
                 st.markdown('</div>', unsafe_allow_html=True)
@@ -639,7 +639,7 @@ def main():
                     "nb_vendors": "Fournisseurs", 
                     "nb_orders": "Nbre de commandes",
                     "nb_materials": "Nbre de références",
-                    "nb_lignes": "Lignes de commande",
+                    "nb_lignes": "Lignes de commandes",
                     "total_value": "Valeur totale"
                 })
                 
@@ -647,7 +647,7 @@ def main():
                 years_summary2["Année"] = years_summary2["Année"].apply(lambda x: format_number(x, is_year=True))
                 
                 # Formater les autres colonnes avec séparateurs de milliers
-                for col in ["Fournisseurs", "Bons de commande", "Matériels uniques", "Lignes de commande"]:
+                for col in ["Fournisseurs", "Nbre de commandes", "Nbre de références", "Lignes de commande"]:
                     years_summary2[col] = years_summary2[col].apply(lambda x: format_number(x))
                 
                 # Formater la valeur totale
