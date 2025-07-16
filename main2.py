@@ -585,7 +585,7 @@ def main():
                 years_summary1["Année"] = years_summary1["Année"].apply(lambda x: format_number(x, is_year=True))
                 
                 # Formater les autres colonnes avec séparateurs de milliers
-                for col in ["Fournisseurs", "Nbre de commandes", "Nbre de références", "Lignes de commande"]:
+                for col in ["Fournisseurs", "Nbre de commandes", "Nbre de références", "Lignes de commandes"]:
                     years_summary1[col] = years_summary1[col].apply(lambda x: format_number(x))
                 
                 # Afficher le DataFrame sans l'index
@@ -647,7 +647,7 @@ def main():
                 years_summary2["Année"] = years_summary2["Année"].apply(lambda x: format_number(x, is_year=True))
                 
                 # Formater les autres colonnes avec séparateurs de milliers
-                for col in ["Fournisseurs", "Nbre de commandes", "Nbre de références", "Lignes de commande"]:
+                for col in ["Fournisseurs", "Nbre de commandes", "Nbre de références", "Lignes de commandes"]:
                     years_summary2[col] = years_summary2[col].apply(lambda x: format_number(x))
                 
                 # Formater la valeur totale
