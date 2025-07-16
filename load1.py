@@ -7,34 +7,45 @@ import matplotlib.pyplot as plt
 def merge_df(df1, df2):
     """
     Distribue les quantités de df2 aux lignes de df1 une par une, dans l'ordre.
-    Garde exactement le même nombre de lignes que df1.
+    Version optimisée avec dictionnaire.
     """
     if df1 is None or df2 is None or df1.empty or df2.empty:
         return df1
     
-    # Créer une copie exacte de df1
+    # Créer une copie de df1
     result = df1.copy()
     result["Document Date"] = None
     result["Order Quantity"] = None
     
-    # Grouper df1 par combinaison
-    for key, group1 in df1.groupby(["Bon de commande", "Fournisseur", "Matériel"]):
-        # Trouver les lignes correspondantes dans df2
-        mask = (
-            (df2["Bons de commande"] == key[0]) & 
-            (df2["Fournisseur"] == key[1]) & 
-            (df2["Matériel"] == key[2])
-        )
-        group2 = df2[mask].reset_index(drop=True)
+    # Créer un dictionnaire pour stocker les quantités par combinaison
+    quantity_dict = {}
+    
+    # Remplir le dictionnaire avec df2
+    for _, row in df2.iterrows():
+        key = (row["Bons de commande"], row["Fournisseur"], row["Matériel"])
+        if key not in quantity_dict:
+            quantity_dict[key] = []
+        quantity_dict[key].append({
+            "Date du document": row["Date du document"],
+            "Order Quantity": row["Order Quantity"]
+        })
+    
+    # Compteur pour chaque combinaison
+    counter = {}
+    
+    # Parcourir df1 et attribuer les quantités
+    for idx, row in df1.iterrows():
+        key = (row["Bon de commande"], row["Fournisseur"], row["Matériel"])
         
-        # Obtenir les indices des lignes de df1 pour cette combinaison
-        group1_indices = group1.index.tolist()
+        if key not in counter:
+            counter[key] = 0
         
-        # Distribuer les quantités : 1ère ligne df1 → 1ère quantité df2, etc.
-        for i, df1_idx in enumerate(group1_indices):
-            if i < len(group2):
-                result.loc[df1_idx, "Document Date"] = group2.iloc[i]["Date du document"]
-                result.loc[df1_idx, "Order Quantity"] = group2.iloc[i]["Order Quantity"]
+        # Si on a encore des quantités pour cette combinaison
+        if key in quantity_dict and counter[key] < len(quantity_dict[key]):
+            data = quantity_dict[key][counter[key]]
+            result.loc[idx, "Document Date"] = data["Date du document"]
+            result.loc[idx, "Order Quantity"] = data["Order Quantity"]
+            counter[key] += 1
     
     return result
     
