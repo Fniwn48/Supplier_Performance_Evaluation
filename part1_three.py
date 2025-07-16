@@ -3,7 +3,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 from datetime import datetime
-
+from babel.dates import format_date
+import locale
+locale.setlocale(locale.LC_ALL, 'C')
 from file1 import *
 
 
@@ -54,7 +56,7 @@ def part1_three(df, year, month, vendor_search):
         st.warning(f"Aucune donnée disponible pour le fournisseur {vendor_search} en mois {month} {year}")
         return
 
-    current_month_name = datetime(2022, month, 1).strftime('%B')
+    current_month_name = format_date(datetime(2022, month, 1), 'MMMM', locale='fr')
     # Titre et description de la section
     st.markdown(f"""
     <div style="background-color:{color_palette['tertiary']}; padding: 8px; border-radius: 8px; margin-top: 25px;">
