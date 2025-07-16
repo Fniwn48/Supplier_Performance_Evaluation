@@ -12,35 +12,30 @@ def merge_df(df1, df2):
     if df1 is None or df2 is None or df1.empty or df2.empty:
         return df1
     
-    print(f"DEBUG: df1 a {len(df1)} lignes")
-    print(f"DEBUG: df2 a {len(df2)} lignes")
-    
+    # Créer une copie exacte de df1
     result = df1.copy()
     result["Document Date"] = None
     result["Order Quantity"] = None
     
-    print(f"DEBUG: result initial a {len(result)} lignes")
-    
-    # Grouper par combinaison et distribuer les quantités
+    # Grouper df1 par combinaison
     for key, group1 in df1.groupby(["Bon de commande", "Fournisseur", "Matériel"]):
-        print(f"DEBUG: Groupe {key} - df1 a {len(group1)} lignes")
-        
         # Trouver les lignes correspondantes dans df2
-        mask = (df2["Bons de commande"] == key[0]) & (df2["Fournisseur"] == key[1]) & (df2["Matériel"] == key[2])
+        mask = (
+            (df2["Bons de commande"] == key[0]) & 
+            (df2["Fournisseur"] == key[1]) & 
+            (df2["Matériel"] == key[2])
+        )
         group2 = df2[mask].reset_index(drop=True)
-        print(f"DEBUG: Groupe {key} - df2 a {len(group2)} lignes")
         
-        # Distribuer les quantités aux lignes de df1
-        df1_indices = group1.index
-        print(f"DEBUG: df1_indices = {df1_indices.tolist()}")
+        # Obtenir les indices des lignes de df1 pour cette combinaison
+        group1_indices = group1.index.tolist()
         
-        for i, idx in enumerate(df1_indices):
+        # Distribuer les quantités : 1ère ligne df1 → 1ère quantité df2, etc.
+        for i, df1_idx in enumerate(group1_indices):
             if i < len(group2):
-                result.loc[idx, "Document Date"] = group2.iloc[i]["Date du document"]
-                result.loc[idx, "Order Quantity"] = group2.iloc[i]["Order Quantity"]
-                print(f"DEBUG: Assigné à ligne {idx}: quantité {group2.iloc[i]['Order Quantity']}")
+                result.loc[df1_idx, "Document Date"] = group2.iloc[i]["Date du document"]
+                result.loc[df1_idx, "Order Quantity"] = group2.iloc[i]["Order Quantity"]
     
-    print(f"DEBUG: result final a {len(result)} lignes")
     return result
     
 @st.cache_data
