@@ -670,7 +670,7 @@ def part_five(df, year, vendor_search):
 
     # Colonnes à afficher pour les produits
     product_display_cols = [
-        'Matériel', 'Description du matériel', 'Bon de commande', 
+        'Matériel', 'Description du matériel', 'Bon de commande', 'Document Date', 'Order Quantity'
         'Délai théorique', 'Délai réel', 'Écart de délai', 'Statut de livraison'
     ]
 
@@ -705,6 +705,10 @@ def part_five(df, year, vendor_search):
                 f'background-color: {color_palette["quaternary"]}30; color: {color_palette["text"]}' 
                 if col == 'Bon de commande' else
                 f'background-color: {color_palette["neutral"]}30; color: {color_palette["text"]}' 
+                if col == 'Document Date' else
+                f'background-color: {color_palette["quaternary"]}30; color: {color_palette["text"]}'
+                if col == 'Order Quantity' else
+                f'background-color: {color_palette["background"]}; color: {color_palette["text"]}'
                 if col == 'Délai théorique' else
                 f'background-color: {color_palette["tertiary"]}30; color: {color_palette["text"]}' 
                 if col == 'Délai réel' else
@@ -756,6 +760,10 @@ def part_five(df, year, vendor_search):
                 f'background-color: {color_palette["quaternary"]}30; color: {color_palette["text"]}' 
                 if col == 'Bon de commande' else
                 f'background-color: {color_palette["neutral"]}30; color: {color_palette["text"]}' 
+                if col == 'Document Date' else
+                f'background-color: {color_palette["quaternary"]}30; color: {color_palette["text"]}'
+                if col == 'Order Quantity' else
+                f'background-color: {color_palette["background"]}; color: {color_palette["text"]}'
                 if col == 'Délai théorique' else
                 f'background-color: {color_palette["tertiary"]}30; color: {color_palette["text"]}' 
                 if col == 'Délai réel' else
