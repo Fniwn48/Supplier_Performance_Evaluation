@@ -2,6 +2,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+import locale; locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8' if 'win' not in __import__('sys').platform else 'French_France.1252')
 from datetime import datetime
 
 def part_three(df, year, month, vendor_search):
