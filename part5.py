@@ -670,7 +670,7 @@ def part_five(df, year, vendor_search):
 
     # Colonnes à afficher pour les produits
     product_display_cols = [
-        'Matériel', 'Description du matériel', 'Bon de commande', 'Document Date', 'Order Quantity'
+        'Matériel', 'Description du matériel', 'Bon de commande', 'Document Date', 'Order Quantity',
         'Délai théorique', 'Délai réel', 'Écart de délai', 'Statut de livraison'
     ]
 
