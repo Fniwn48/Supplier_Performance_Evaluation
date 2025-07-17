@@ -70,8 +70,8 @@ def part1_four(df, vendor_search):
 
     # Renommer les colonnes
     yearly_summary_display = yearly_summary_display.rename(columns={
-        "nb_commandes": "Commandes Uniques",
-        "nb_produits": "Produits Uniques",
+        "nb_commandes": "Nbre de commandes",
+        "nb_produits": "Nbre de références",
         "nb_lignes": "Nombre de Lignes",
         "qte_min": "Qté Min",
         "qte_max": "Qté Max",
@@ -92,8 +92,8 @@ def part1_four(df, vendor_search):
     def highlight_columns_yearly(x):
         df_styler = pd.DataFrame('', index=x.index, columns=x.columns)
         df_styler['Année'] = 'background-color: #e3f2fd; font-weight: bold;'
-        df_styler['Commandes Uniques'] = 'background-color: #f1f8e9'
-        df_styler['Produits Uniques'] = 'background-color: #e8eaf6'
+        df_styler['Nbre de commandes'] = 'background-color: #f1f8e9'
+        df_styler['Nbre de références'] = 'background-color: #e8eaf6'
         df_styler['Nombre de Lignes'] = 'background-color: #e0f7fa'
         df_styler['Qté Totale'] = 'background-color: #f1f8e9'
         df_styler['Qté Min'] = 'background-color: #e8eaf6'
@@ -211,7 +211,7 @@ def part1_four(df, vendor_search):
     st.plotly_chart(fig_monthly_orders, use_container_width=True)
     
     # Graphique pour le nombre de produits uniques par mois
-    st.markdown("<h6 style='color: #000000; margin-top: 20px;'>Évolution Mensuelle du Nombre de Produits Uniques</h6>", unsafe_allow_html=True)
+    st.markdown("<h6 style='color: #000000; margin-top: 20px;'>Évolution Mensuelle du Nombre de Références</h6>", unsafe_allow_html=True)
     
     fig_monthly_products = go.Figure()
     
