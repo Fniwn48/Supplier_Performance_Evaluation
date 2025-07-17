@@ -334,7 +334,7 @@ def part1_five(df, year, vendor_search):
     
     # Définir les couleurs pour l'harmonisation
     color_current_year = '#6366F1'  # Indigo pour l'année courante
-    color_previous_year = '#94A3B8'  # Gris-bleu pour l'année précédente
+    color_previous_year = '#EF4444'  # Gris-bleu pour l'année précédente
     color_materials = '#10B981'  # Vert pour les matériels
     
     # Barres pour l'année courante
