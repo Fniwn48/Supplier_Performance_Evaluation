@@ -307,51 +307,102 @@ def part1_five(df, year, vendor_search):
 
     # Trier par mois
     monthly_data = monthly_data.sort_values(by="Month")
+    
+    # Regrouper les données par mois pour l'année précédente
+    monthly_data_prev = df_previous_year.groupby(["Month", "Month_Name"]).agg(
+        nb_commandes=("Bons de commande", "nunique"),
+        nb_materials=("Matériel", "nunique"),
+        valeur_totale=("Valeur nette de la commande", "sum")
+    ).reset_index()
+    
+    # Trier par mois
+    monthly_data_prev = monthly_data_prev.sort_values(by="Month")
+    # Dictionnaire de traduction des mois
+    mois_fr = {
+        'January': 'Janvier', 'February': 'Février', 'March': 'Mars',
+        'April': 'Avril', 'May': 'Mai', 'June': 'Juin',
+        'July': 'Juillet', 'August': 'Août', 'September': 'Septembre',
+        'October': 'Octobre', 'November': 'Novembre', 'December': 'Décembre'
+    }
 
-    # Créer le graphique d'évolution mensuelle
+    # Appliquer la traduction
+    monthly_data['Month_Name'] = monthly_data['Month_Name'].map(mois_fr)
+    monthly_data_prev['Month_Name'] = monthly_data_prev['Month_Name'].map(mois_fr)
+    
+    # Créer le graphique d'évolution mensuelle avec comparaison
     fig = go.Figure()
-
-    # Ajouter les barres pour la valeur totale (axe Y gauche)
+    
+    # Définir les couleurs pour l'harmonisation
+    color_current_year = '#6366F1'  # Indigo pour l'année courante
+    color_previous_year = '#94A3B8'  # Gris-bleu pour l'année précédente
+    color_materials = '#10B981'  # Vert pour les matériels
+    
+    # Barres pour l'année courante
     fig.add_trace(go.Bar(
         x=monthly_data["Month_Name"],
         y=monthly_data["valeur_totale"],
-        name='Valeur Totale (€)',
-        marker=dict(color='#6A0DAD'),
+        name=f'Valeur {year}',
+        marker=dict(color=color_current_year),
         opacity=0.85,
+        offsetgroup=1,
         hovertemplate='<b>%{x}</b><br>Valeur: %{y:,.2f} €<extra></extra>'
     ))
-
-    # Ajouter une ligne pour le nombre de matériels (axe Y droit)
+    
+    # Barres pour l'année précédente
+    fig.add_trace(go.Bar(
+        x=monthly_data_prev["Month_Name"],
+        y=monthly_data_prev["valeur_totale"],
+        name=f'Valeur {previous_year}',
+        marker=dict(color=color_previous_year),
+        opacity=0.85,
+        offsetgroup=2,
+        hovertemplate='<b>%{x}</b><br>Valeur: %{y:,.2f} €<extra></extra>'
+    ))
+    
+    # Ligne pour les commandes de l'année courante
+    fig.add_trace(go.Scatter(
+        x=monthly_data["Month_Name"],
+        y=monthly_data["nb_commandes"],
+        mode='lines+markers',
+        name=f'Commandes {year}',
+        line=dict(color=color_current_year, width=3),
+        marker=dict(size=9, symbol='circle'),
+        yaxis='y2',
+        hovertemplate='<b>%{x}</b><br>Commandes: %{y}<extra></extra>'
+    ))
+    
+    # Ligne pour les commandes de l'année précédente
+    fig.add_trace(go.Scatter(
+        x=monthly_data_prev["Month_Name"],
+        y=monthly_data_prev["nb_commandes"],
+        mode='lines+markers',
+        name=f'Commandes {previous_year}',
+        line=dict(color=color_previous_year, width=3, dash='dash'),
+        marker=dict(size=9, symbol='square'),
+        yaxis='y2',
+        hovertemplate='<b>%{x}</b><br>Commandes: %{y}<extra></extra>'
+    ))
+    
+    # Ligne pour le nombre de matériels (année courante seulement)
     fig.add_trace(go.Scatter(
         x=monthly_data["Month_Name"],
         y=monthly_data["nb_materials"],
         mode='lines+markers',
         name='Nb Matériels',
-        line=dict(color='#FF7F00', width=3),
+        line=dict(color=color_materials, width=3),
         marker=dict(size=9, symbol='diamond'),
         yaxis='y2',
         hovertemplate='<b>%{x}</b><br>Matériels: %{y}<extra></extra>'
     ))
-
-    # Ajouter une ligne pour le nombre de commandes (axe Y droit)
-    fig.add_trace(go.Scatter(
-        x=monthly_data["Month_Name"],
-        y=monthly_data["nb_commandes"],
-        mode='lines+markers',
-        name='Nb Commandes',
-        line=dict(color='#32CD32', width=3, dash='dashdot'),
-        marker=dict(size=9, symbol='circle'),
-        yaxis='y2',
-        hovertemplate='<b>%{x}</b><br>Commandes: %{y}<extra></extra>'
-    ))
-
+    
     # Configuration des axes et du layout
     fig.update_layout(
         title={
-            'text': f"Évolution des commandes en {year} pour {vendor_search}",
+            'text': f"Évolution comparative {previous_year} vs {year} pour {vendor_search}",
             'font': {'size': 13, 'color': '#505050'},
             'y': 0.95
         },
+        barmode='group',
         xaxis=dict(
             title='Mois',
             tickangle=-45
@@ -359,14 +410,14 @@ def part1_five(df, year, vendor_search):
         yaxis=dict(
             title=dict(
                 text='Valeur (€)',
-                font=dict(color='#6A0DAD')  # Remplacer titlefont par font à l'intérieur de title
+                font=dict(color='#6A0DAD')
             ),
             tickfont=dict(color='#6A0DAD')
         ),
         yaxis2=dict(
             title=dict(
                 text='Nombre de Commandes/Matériels',
-                font=dict(color='#32CD32')  # Remplacer titlefont par font à l'intérieur de title
+                font=dict(color='#32CD32')
             ),
             tickfont=dict(color='#32CD32'),
             anchor='x',
