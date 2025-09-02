@@ -13,14 +13,30 @@ def merge_df(df1, df2):
     result["Document Date"] = None
     result["Order Quantity"] = None
     
-    # Convertir en numpy pour vitesse maximale
-    df1_keys = (df1["Bon de commande"].values.astype(str) + "|" + 
-                df1["Fournisseur"].values.astype(str) + "|" + 
-                df1["Matériel"].values.astype(str))
+    # STANDARDISATION DES FORMATS - Copier les DataFrames pour éviter les modifications
+    df1_clean = df1.copy()
+    df2_clean = df2.copy()
     
-    df2_keys = (df2["Bons de commande"].values.astype(str) + "|" + 
-                df2["Fournisseur"].values.astype(str) + "|" + 
-                df2["Matériel"].values.astype(str))
+    # Standardiser les bons de commande (enlever les décimales si présentes)
+    df1_clean["Bon de commande"] = df1_clean["Bon de commande"].astype(str).str.replace('\.0$', '', regex=True).str.strip()
+    df2_clean["Bons de commande"] = df2_clean["Bons de commande"].astype(str).str.replace('\.0$', '', regex=True).str.strip()
+    
+    # Standardiser les fournisseurs (enlever les décimales et espaces)
+    df1_clean["Fournisseur"] = df1_clean["Fournisseur"].astype(str).str.replace('\.0$', '', regex=True).str.strip()
+    df2_clean["Fournisseur"] = df2_clean["Fournisseur"].astype(str).str.replace('\.0$', '', regex=True).str.strip()
+    
+    # Standardiser les matériels (enlever les espaces)
+    df1_clean["Matériel"] = df1_clean["Matériel"].astype(str).str.strip()
+    df2_clean["Matériel"] = df2_clean["Matériel"].astype(str).str.strip()
+    
+    # Convertir en numpy pour vitesse maximale avec les données nettoyées
+    df1_keys = (df1_clean["Bon de commande"].values.astype(str) + "|" + 
+                df1_clean["Fournisseur"].values.astype(str) + "|" + 
+                df1_clean["Matériel"].values.astype(str))
+    
+    df2_keys = (df2_clean["Bons de commande"].values.astype(str) + "|" + 
+                df2_clean["Fournisseur"].values.astype(str) + "|" + 
+                df2_clean["Matériel"].values.astype(str))
     
     # Créer mapping ultra-rapide
     from collections import defaultdict
@@ -37,6 +53,9 @@ def merge_df(df1, df2):
     df2_doc_dates = df2["Date du document"].values
     df2_quantities = df2["Order Quantity"].values
     
+    # Compteur de correspondances pour diagnostic
+    matches_found = 0
+    
     # Boucle optimisée
     for i, key in enumerate(df1_keys):
         if key in key_mapping:
@@ -47,6 +66,7 @@ def merge_df(df1, df2):
                 doc_dates[i] = df2_doc_dates[df2_idx]
                 quantities[i] = df2_quantities[df2_idx]
                 key_counters[key] += 1
+                matches_found += 1
     
     # Réassigner les valeurs
     result["Document Date"] = doc_dates
@@ -332,3 +352,4 @@ def display_header():
             Évaluation de la Performance de Livraison des Fournisseurs
         </h1>
     """, unsafe_allow_html=True)
+
